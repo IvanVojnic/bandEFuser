@@ -26,8 +26,8 @@ message SignInRequest {
 }
 
 message SignInResponse {
-  bool isLogin = 1;
-  string userID = 2;
+  string at = 1;
+  string rt = 2;
 }
 
 message RefreshTokenRequest {
