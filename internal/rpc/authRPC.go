@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"userMS/internal/utils"
 	"userMS/models"
 	pr "userMS/proto"
@@ -47,7 +48,8 @@ func (s *UserServer) SignIn(ctx context.Context, req *pr.SignUpRequest) (*pr.Sig
 	if err != nil {
 		return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while login user, %s", err)
 	}
-	if user.Password == password {
+	match := CheckPasswordHash(password, user.Password)
+	if match {
 		rt, errRT := utils.GenerateToken(user.ID, utils.TokenRTDuration)
 		if errRT != nil {
 			return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while generate rt, %s", err)
@@ -63,4 +65,9 @@ func (s *UserServer) SignIn(ctx context.Context, req *pr.SignUpRequest) (*pr.Sig
 		return &pr.SignInResponse{At: at, Rt: rt}, nil
 	}
 	return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while loogin, wrong credentials %s", err)
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
