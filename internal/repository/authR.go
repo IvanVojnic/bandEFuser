@@ -20,8 +20,8 @@ func NewUserPostgres(db *pgxpool.Pool) *UserPostgres {
 
 // SignUp used to create user
 func (r *UserPostgres) SignUp(ctx context.Context, user *models.User) error {
-	_, err := r.db.Exec(ctx, "insert into users (id, email, password) values($1, $2, $3)",
-		user.UserID, user.UserEmail, user.Password)
+	_, err := r.db.Exec(ctx, "insert into users (id, email, name, password) values($1, $2, $3, $4)",
+		user.ID, user.Email, user.Name, user.Password)
 	if err != nil {
 		return fmt.Errorf("error while user creating: %v", err)
 	}
@@ -41,8 +41,8 @@ func (r *UserPostgres) UpdateRefreshToken(ctx context.Context, rt string, id uui
 func (r *UserPostgres) GetUserByID(ctx context.Context, userID uuid.UUID) (models.User, error) {
 	user := models.User{}
 	err := r.db.QueryRow(ctx,
-		"select users.id, users.email, users.password, users.refreshtoken from users where id=$1",
-		userID).Scan(&user.UserID, &user.UserEmail, &user.Password, &user.RefreshToken)
+		"select users.id, users.email, users.name, users.password, users.refreshtoken from users where users.id=$1",
+		userID).Scan(&user.ID, &user.Email, &user.Name, &user.Password, &user.RefreshToken)
 	if err != nil {
 		return user, fmt.Errorf("get user error %w", err)
 	}
@@ -53,8 +53,8 @@ func (r *UserPostgres) GetUserByID(ctx context.Context, userID uuid.UUID) (model
 // SignInUser used to sign in user
 func (r *UserPostgres) SignIn(ctx context.Context, user *models.User) error {
 	err := r.db.QueryRow(ctx,
-		`select users.id, users.email, users.password from users where email=$1`,
-		user.UserEmail).Scan(&user.UserID, &user.UserEmail, &user.Password)
+		`select users.id, users.name, users.password from users where users.name=$1`,
+		user.Name).Scan(&user.ID, &user.Name, &user.Password)
 	if err != nil {
 		return fmt.Errorf("error while getting user %w", err)
 	}

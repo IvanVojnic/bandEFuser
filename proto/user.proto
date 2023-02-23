@@ -1,7 +1,8 @@
 syntax = "proto3";
 
+option go_package = "github.com/IvanVojnic/bandEFuser/proto";
 
-option go_package = ".";
+package user;
 
 service user {
   rpc SignUp(SignUpRequest) returns (SignUpResponse){}
@@ -26,6 +27,7 @@ message SignInRequest {
 
 message SignInResponse {
   bool isLogin = 1;
+  string userID = 2;
 }
 
 message RefreshTokenRequest {
