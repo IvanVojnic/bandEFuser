@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/IvanVojnic/bandEFuser/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"userMS/models"
 )
 
 // UserCommPostgres is a wrapper to db object

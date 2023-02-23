@@ -3,11 +3,11 @@ package rpc
 import (
 	"context"
 	"fmt"
+	"github.com/IvanVojnic/bandEFuser/internal/utils"
+	"github.com/IvanVojnic/bandEFuser/models"
+	pr "github.com/IvanVojnic/bandEFuser/proto"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"userMS/internal/utils"
-	"userMS/models"
-	pr "userMS/proto"
 )
 
 type Auth interface {
