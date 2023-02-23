@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: proto/user.proto
 
-package __
+package proto
 
 import (
 	context "context"
@@ -37,7 +37,7 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 
 func (c *userClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error) {
 	out := new(SignUpResponse)
-	err := c.cc.Invoke(ctx, "/user/SignUp", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.user/SignUp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *userClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc
 
 func (c *userClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error) {
 	out := new(SignInResponse)
-	err := c.cc.Invoke(ctx, "/user/SignIn", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.user/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *userClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc
 
 func (c *userClient) UpdateRefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
 	out := new(RefreshTokenResponse)
-	err := c.cc.Invoke(ctx, "/user/UpdateRefreshToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.user/UpdateRefreshToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func _User_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user/SignUp",
+		FullMethod: "/user.user/SignUp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).SignUp(ctx, req.(*SignUpRequest))
@@ -126,7 +126,7 @@ func _User_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user/SignIn",
+		FullMethod: "/user.user/SignIn",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).SignIn(ctx, req.(*SignInRequest))
@@ -144,7 +144,7 @@ func _User_UpdateRefreshToken_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user/UpdateRefreshToken",
+		FullMethod: "/user.user/UpdateRefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).UpdateRefreshToken(ctx, req.(*RefreshTokenRequest))
@@ -156,7 +156,7 @@ func _User_UpdateRefreshToken_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "user",
+	ServiceName: "user.user",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

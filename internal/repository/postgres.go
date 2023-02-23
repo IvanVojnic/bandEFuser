@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"userMS/internal/config"
+	"github.com/IvanVojnic/bandEFuser/internal/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
