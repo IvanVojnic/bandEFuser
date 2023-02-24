@@ -7,7 +7,6 @@ package user;
 service user {
   rpc SignUp(SignUpRequest) returns (SignUpResponse){}
   rpc SignIn(SignInRequest) returns (SignInResponse){}
-  rpc UpdateRefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){}
 }
 
 message SignUpRequest {
@@ -28,12 +27,4 @@ message SignInRequest {
 message SignInResponse {
   string at = 1;
   string rt = 2;
-}
-
-message RefreshTokenRequest {
-  string rt = 1;
-}
-
-message RefreshTokenResponse {
-  bool isUpdated = 1;
 }

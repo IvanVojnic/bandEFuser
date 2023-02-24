@@ -24,27 +24,27 @@ type Tokens struct {
 }
 
 type UserServer struct {
-	pr.UserServer
-	authR Auth
+	pr.UnimplementedUserServer
+	authRepo Auth
 }
 
-func NewMs1Server() *UserServer {
-	return &UserServer{}
+func NewUserAuthServer(authRepo Auth) *UserServer {
+	return &UserServer{authRepo: authRepo}
 }
 
 func (s *UserServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.SignUpResponse, error) {
 	user := models.User{ID: uuid.New(), Email: req.GetEmail(), Name: req.GetName(), Password: req.GetPassword()}
-	err := s.authR.SignUp(ctx, &user)
+	err := s.authRepo.SignUp(ctx, &user)
 	if err != nil {
 		return &pr.SignUpResponse{IsCreated: false}, fmt.Errorf("error while creating user")
 	}
 	return &pr.SignUpResponse{IsCreated: true}, nil
 }
 
-func (s *UserServer) SignIn(ctx context.Context, req *pr.SignUpRequest) (*pr.SignInResponse, error) {
+func (s *UserServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr.SignInResponse, error) {
 	password := req.GetPassword()
 	user := models.User{Name: req.GetName(), Password: password}
-	err := s.authR.SignIn(ctx, &user)
+	err := s.authRepo.SignIn(ctx, &user)
 	if err != nil {
 		return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while login user, %s", err)
 	}
@@ -58,7 +58,7 @@ func (s *UserServer) SignIn(ctx context.Context, req *pr.SignUpRequest) (*pr.Sig
 		if errAT != nil {
 			return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while generate at, %s", err)
 		}
-		errUpdateRT := s.authR.UpdateRefreshToken(ctx, rt, user.ID)
+		errUpdateRT := s.authRepo.UpdateRefreshToken(ctx, rt, user.ID)
 		if errUpdateRT != nil {
 			return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while set rt, %s", err)
 		}

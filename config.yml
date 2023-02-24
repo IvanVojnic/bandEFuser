@@ -1,0 +1,2 @@
+storage:
+  pUrl: postgres://postgres:postgres@host.docker.internal:5432/postgres?sslmode=disable
