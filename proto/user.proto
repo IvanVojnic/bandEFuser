@@ -7,7 +7,11 @@ package user;
 service user {
   rpc SignUp(SignUpRequest) returns (SignUpResponse){}
   rpc SignIn(SignInRequest) returns (SignInResponse){}
-  rpc UpdateRefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){}
+  rpc GetFriends(GetFriendsRequest) returns (GetFriendsResponse){}
+  rpc SendFriendRequest(SendFriendRequestReq) returns (SendFriendRequestResp){}
+  rpc AcceptFriendsRequest(AcceptFriendsRequestReq) returns (AcceptFriendsRequestResp){}
+  rpc FindUser(FindUserRequest) returns (FindUserResponse){}
+  rpc GetRequest(GetRequestReq) returns (GetFriendsResponse){}
 }
 
 message SignUpRequest {
@@ -30,10 +34,50 @@ message SignInResponse {
   string rt = 2;
 }
 
-message RefreshTokenRequest {
-  string rt = 1;
+message GetFriendsRequest {
+  string userID = 1;
 }
 
-message RefreshTokenResponse {
-  bool isUpdated = 1;
+message GetFriendsResponse {
+  repeated User friends = 1;
+}
+
+message User {
+  string userID = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message SendFriendRequestReq{
+  string userID = 1;
+  string receiverID = 2;
+}
+
+message SendFriendRequestResp{
+
+}
+
+message AcceptFriendsRequestReq{
+  string userSenderID = 1;
+  string userID = 2;
+}
+
+message AcceptFriendsRequestResp{
+
+}
+
+message FindUserRequest{
+  string userEmail = 1;
+}
+
+message FindUserResponse{
+  User friend = 1;
+}
+
+message GetRequestReq{
+  string userID = 1;
+}
+
+message GetRequestResp{
+  repeated User users = 1;
 }

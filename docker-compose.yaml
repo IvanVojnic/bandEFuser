@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:latest
+    user: postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    networks:
+      - default
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://postgres:5432/postgres -user=postgres -password=postgres -locations=filesystem:/flyway/sql -connectRetries=10  migrate
+    volumes:
+      - ${PWD}/migrations/sql:/flyway/sql
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      - default
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vojnic/user:userMs
+    depends_on:
+      - postgres
+      - flyway
+    environment:
+      - pUrl=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+    networks:
+      - default
+  appcmd:
+    image: vojnic/bandef:cmdMS
+    ports:
+      - "3000:40000"
+    environment:
+      - PORT=app:8000
+    networks:
+      - default
