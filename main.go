@@ -37,7 +37,7 @@ func main() {
 	//	userServ := rpc.NewUserCommServer(userCommRepo)
 
 	pr.RegisterUserServer(s, userAuthServ)
-	listen, err := net.Listen("tcp", "localhost:8000")
+	listen, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		defer logrus.Fatalf("error while listening port: %e", err)
 	}

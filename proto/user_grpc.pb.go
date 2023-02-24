@@ -24,6 +24,11 @@ const _ = grpc.SupportPackageIsVersion7
 type UserClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
+	GetFriends(ctx context.Context, in *GetFriendsRequest, opts ...grpc.CallOption) (*GetFriendsResponse, error)
+	SendFriendRequest(ctx context.Context, in *SendFriendRequestReq, opts ...grpc.CallOption) (*SendFriendRequestResp, error)
+	AcceptFriendsRequest(ctx context.Context, in *AcceptFriendsRequestReq, opts ...grpc.CallOption) (*AcceptFriendsRequestResp, error)
+	FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error)
+	GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetFriendsResponse, error)
 }
 
 type userClient struct {
@@ -52,12 +57,62 @@ func (c *userClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *userClient) GetFriends(ctx context.Context, in *GetFriendsRequest, opts ...grpc.CallOption) (*GetFriendsResponse, error) {
+	out := new(GetFriendsResponse)
+	err := c.cc.Invoke(ctx, "/user.user/GetFriends", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) SendFriendRequest(ctx context.Context, in *SendFriendRequestReq, opts ...grpc.CallOption) (*SendFriendRequestResp, error) {
+	out := new(SendFriendRequestResp)
+	err := c.cc.Invoke(ctx, "/user.user/SendFriendRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) AcceptFriendsRequest(ctx context.Context, in *AcceptFriendsRequestReq, opts ...grpc.CallOption) (*AcceptFriendsRequestResp, error) {
+	out := new(AcceptFriendsRequestResp)
+	err := c.cc.Invoke(ctx, "/user.user/AcceptFriendsRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error) {
+	out := new(FindUserResponse)
+	err := c.cc.Invoke(ctx, "/user.user/FindUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetFriendsResponse, error) {
+	out := new(GetFriendsResponse)
+	err := c.cc.Invoke(ctx, "/user.user/GetRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
+	GetFriends(context.Context, *GetFriendsRequest) (*GetFriendsResponse, error)
+	SendFriendRequest(context.Context, *SendFriendRequestReq) (*SendFriendRequestResp, error)
+	AcceptFriendsRequest(context.Context, *AcceptFriendsRequestReq) (*AcceptFriendsRequestResp, error)
+	FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error)
+	GetRequest(context.Context, *GetRequestReq) (*GetFriendsResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -70,6 +125,21 @@ func (UnimplementedUserServer) SignUp(context.Context, *SignUpRequest) (*SignUpR
 }
 func (UnimplementedUserServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedUserServer) GetFriends(context.Context, *GetFriendsRequest) (*GetFriendsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFriends not implemented")
+}
+func (UnimplementedUserServer) SendFriendRequest(context.Context, *SendFriendRequestReq) (*SendFriendRequestResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendFriendRequest not implemented")
+}
+func (UnimplementedUserServer) AcceptFriendsRequest(context.Context, *AcceptFriendsRequestReq) (*AcceptFriendsRequestResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptFriendsRequest not implemented")
+}
+func (UnimplementedUserServer) FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindUser not implemented")
+}
+func (UnimplementedUserServer) GetRequest(context.Context, *GetRequestReq) (*GetFriendsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRequest not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -120,6 +190,96 @@ func _User_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetFriends_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFriendsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetFriends(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.user/GetFriends",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetFriends(ctx, req.(*GetFriendsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_SendFriendRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendFriendRequestReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SendFriendRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.user/SendFriendRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SendFriendRequest(ctx, req.(*SendFriendRequestReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_AcceptFriendsRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptFriendsRequestReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).AcceptFriendsRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.user/AcceptFriendsRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).AcceptFriendsRequest(ctx, req.(*AcceptFriendsRequestReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_FindUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).FindUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.user/FindUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).FindUser(ctx, req.(*FindUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_GetRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequestReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.user/GetRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetRequest(ctx, req.(*GetRequestReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +294,26 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignIn",
 			Handler:    _User_SignIn_Handler,
+		},
+		{
+			MethodName: "GetFriends",
+			Handler:    _User_GetFriends_Handler,
+		},
+		{
+			MethodName: "SendFriendRequest",
+			Handler:    _User_SendFriendRequest_Handler,
+		},
+		{
+			MethodName: "AcceptFriendsRequest",
+			Handler:    _User_AcceptFriendsRequest_Handler,
+		},
+		{
+			MethodName: "FindUser",
+			Handler:    _User_FindUser_Handler,
+		},
+		{
+			MethodName: "GetRequest",
+			Handler:    _User_GetRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

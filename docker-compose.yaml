@@ -31,17 +31,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: vojnic/bandef:users
+    image: vojnic/user:userMs
     depends_on:
       - postgres
       - flyway
-    ports:
-      - "3030:4040"
     environment:
-      - pUrl=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
-      - DB=postgres
-      - PASSWORD=postgres
-      - USER=postgres
-      - PORT=5432
+      - pUrl=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+    networks:
+      - default
+  appcmd:
+    image: vojnic/bandef:cmdMS
+    ports:
+      - "3000:40000"
+    environment:
+      - PORT=app:8000
     networks:
       - default
