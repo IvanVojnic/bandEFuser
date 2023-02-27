@@ -10,6 +10,7 @@ service user {
   rpc GetFriends(GetFriendsRequest) returns (GetFriendsResponse){}
   rpc SendFriendRequest(SendFriendRequestReq) returns (SendFriendRequestResp){}
   rpc AcceptFriendsRequest(AcceptFriendsRequestReq) returns (AcceptFriendsRequestResp){}
+  rpc DeclineFriendsRequest(DeclineFriendsRequestReq) returns (DeclineFriendsRequestResp){}
   rpc FindUser(FindUserRequest) returns (FindUserResponse){}
   rpc GetRequest(GetRequestReq) returns (GetFriendsResponse){}
 }
@@ -63,6 +64,15 @@ message AcceptFriendsRequestReq{
 }
 
 message AcceptFriendsRequestResp{
+
+}
+
+message DeclineFriendsRequestReq{
+  string userSenderID = 1;
+  string userID = 2;
+}
+
+message DeclineFriendsRequestResp{
 
 }
 

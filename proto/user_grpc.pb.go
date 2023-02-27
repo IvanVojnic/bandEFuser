@@ -27,6 +27,7 @@ type UserClient interface {
 	GetFriends(ctx context.Context, in *GetFriendsRequest, opts ...grpc.CallOption) (*GetFriendsResponse, error)
 	SendFriendRequest(ctx context.Context, in *SendFriendRequestReq, opts ...grpc.CallOption) (*SendFriendRequestResp, error)
 	AcceptFriendsRequest(ctx context.Context, in *AcceptFriendsRequestReq, opts ...grpc.CallOption) (*AcceptFriendsRequestResp, error)
+	DeclineFriendsRequest(ctx context.Context, in *DeclineFriendsRequestReq, opts ...grpc.CallOption) (*DeclineFriendsRequestResp, error)
 	FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error)
 	GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetFriendsResponse, error)
 }
@@ -84,6 +85,15 @@ func (c *userClient) AcceptFriendsRequest(ctx context.Context, in *AcceptFriends
 	return out, nil
 }
 
+func (c *userClient) DeclineFriendsRequest(ctx context.Context, in *DeclineFriendsRequestReq, opts ...grpc.CallOption) (*DeclineFriendsRequestResp, error) {
+	out := new(DeclineFriendsRequestResp)
+	err := c.cc.Invoke(ctx, "/user.user/DeclineFriendsRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error) {
 	out := new(FindUserResponse)
 	err := c.cc.Invoke(ctx, "/user.user/FindUser", in, out, opts...)
@@ -111,6 +121,7 @@ type UserServer interface {
 	GetFriends(context.Context, *GetFriendsRequest) (*GetFriendsResponse, error)
 	SendFriendRequest(context.Context, *SendFriendRequestReq) (*SendFriendRequestResp, error)
 	AcceptFriendsRequest(context.Context, *AcceptFriendsRequestReq) (*AcceptFriendsRequestResp, error)
+	DeclineFriendsRequest(context.Context, *DeclineFriendsRequestReq) (*DeclineFriendsRequestResp, error)
 	FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error)
 	GetRequest(context.Context, *GetRequestReq) (*GetFriendsResponse, error)
 	mustEmbedUnimplementedUserServer()
@@ -134,6 +145,9 @@ func (UnimplementedUserServer) SendFriendRequest(context.Context, *SendFriendReq
 }
 func (UnimplementedUserServer) AcceptFriendsRequest(context.Context, *AcceptFriendsRequestReq) (*AcceptFriendsRequestResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptFriendsRequest not implemented")
+}
+func (UnimplementedUserServer) DeclineFriendsRequest(context.Context, *DeclineFriendsRequestReq) (*DeclineFriendsRequestResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeclineFriendsRequest not implemented")
 }
 func (UnimplementedUserServer) FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUser not implemented")
@@ -244,6 +258,24 @@ func _User_AcceptFriendsRequest_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_DeclineFriendsRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeclineFriendsRequestReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).DeclineFriendsRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.user/DeclineFriendsRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).DeclineFriendsRequest(ctx, req.(*DeclineFriendsRequestReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_FindUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FindUserRequest)
 	if err := dec(in); err != nil {
@@ -306,6 +338,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptFriendsRequest",
 			Handler:    _User_AcceptFriendsRequest_Handler,
+		},
+		{
+			MethodName: "DeclineFriendsRequest",
+			Handler:    _User_DeclineFriendsRequest_Handler,
 		},
 		{
 			MethodName: "FindUser",
