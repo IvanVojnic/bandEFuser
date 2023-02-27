@@ -12,7 +12,7 @@ service user {
   rpc AcceptFriendsRequest(AcceptFriendsRequestReq) returns (AcceptFriendsRequestResp){}
   rpc DeclineFriendsRequest(DeclineFriendsRequestReq) returns (DeclineFriendsRequestResp){}
   rpc FindUser(FindUserRequest) returns (FindUserResponse){}
-  rpc GetRequest(GetRequestReq) returns (GetFriendsResponse){}
+  rpc GetRequest(GetRequestReq) returns (GetRequestResp){}
 }
 
 message SignUpRequest {

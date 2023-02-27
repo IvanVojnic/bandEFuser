@@ -29,7 +29,7 @@ type UserClient interface {
 	AcceptFriendsRequest(ctx context.Context, in *AcceptFriendsRequestReq, opts ...grpc.CallOption) (*AcceptFriendsRequestResp, error)
 	DeclineFriendsRequest(ctx context.Context, in *DeclineFriendsRequestReq, opts ...grpc.CallOption) (*DeclineFriendsRequestResp, error)
 	FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error)
-	GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetFriendsResponse, error)
+	GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetRequestResp, error)
 }
 
 type userClient struct {
@@ -103,8 +103,8 @@ func (c *userClient) FindUser(ctx context.Context, in *FindUserRequest, opts ...
 	return out, nil
 }
 
-func (c *userClient) GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetFriendsResponse, error) {
-	out := new(GetFriendsResponse)
+func (c *userClient) GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetRequestResp, error) {
+	out := new(GetRequestResp)
 	err := c.cc.Invoke(ctx, "/user.user/GetRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ type UserServer interface {
 	AcceptFriendsRequest(context.Context, *AcceptFriendsRequestReq) (*AcceptFriendsRequestResp, error)
 	DeclineFriendsRequest(context.Context, *DeclineFriendsRequestReq) (*DeclineFriendsRequestResp, error)
 	FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error)
-	GetRequest(context.Context, *GetRequestReq) (*GetFriendsResponse, error)
+	GetRequest(context.Context, *GetRequestReq) (*GetRequestResp, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -152,7 +152,7 @@ func (UnimplementedUserServer) DeclineFriendsRequest(context.Context, *DeclineFr
 func (UnimplementedUserServer) FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUser not implemented")
 }
-func (UnimplementedUserServer) GetRequest(context.Context, *GetRequestReq) (*GetFriendsResponse, error) {
+func (UnimplementedUserServer) GetRequest(context.Context, *GetRequestReq) (*GetRequestResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRequest not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}

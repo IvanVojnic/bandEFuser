@@ -32,11 +32,10 @@ func main() {
 	}
 	defer repository.ClosePool(db)
 	userAuthRepo := repository.NewUserPostgres(db)
-	//	userCommRepo := repository.NewUserCommPostgres(db)
-	userAuthServ := rpc.NewUserAuthServer(userAuthRepo)
-	//	userServ := rpc.NewUserCommServer(userCommRepo)
+	userCommRepo := repository.NewUserCommPostgres(db)
+	userServ := rpc.NewUserAuthServer(userAuthRepo, userCommRepo)
 
-	pr.RegisterUserServer(s, userAuthServ)
+	pr.RegisterUserServer(s, userServ)
 	listen, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		defer logrus.Fatalf("error while listening port: %e", err)

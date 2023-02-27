@@ -17,6 +17,15 @@ type Auth interface {
 	SignIn(ctx context.Context, user *models.User) error
 }
 
+type UserComm interface {
+	GetFriends(ctx context.Context, userID uuid.UUID, users []*pr.User) error
+	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
+	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
+	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
+	FindUser(ctx context.Context, userEmail string) (*pr.User, error)
+	GetRequest(ctx context.Context, userID uuid.UUID, users []*pr.User) error
+}
+
 // Tokens used to define at and rt
 type Tokens struct {
 	AccessToken  string `json:"access"`
@@ -25,11 +34,12 @@ type Tokens struct {
 
 type UserServer struct {
 	pr.UnimplementedUserServer
-	authRepo Auth
+	authRepo     Auth
+	userCommRepo UserComm
 }
 
-func NewUserAuthServer(authRepo Auth) *UserServer {
-	return &UserServer{authRepo: authRepo}
+func NewUserAuthServer(authRepo Auth, userCommRepo UserComm) *UserServer {
+	return &UserServer{authRepo: authRepo, userCommRepo: userCommRepo}
 }
 
 func (s *UserServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.SignUpResponse, error) {

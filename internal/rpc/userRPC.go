@@ -7,25 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserComm interface {
-	GetFriends(ctx context.Context, userID uuid.UUID, users []*pr.User) error
-	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
-	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
-	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
-	FindUser(ctx context.Context, userEmail string) (*pr.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID, users []*pr.User) error
-}
-
-type UserCommServer struct {
-	pr.UserServer
-	userCommRepo UserComm
-}
-
-func NewUserCommServer(userCommRepo UserComm) *UserCommServer {
-	return &UserCommServer{userCommRepo: userCommRepo}
-}
-
-func (s *UserCommServer) GetFriends(ctx context.Context, req *pr.GetFriendsRequest) (*pr.GetFriendsResponse, error) {
+func (s *UserServer) GetFriends(ctx context.Context, req *pr.GetFriendsRequest) (*pr.GetFriendsResponse, error) {
 	userID, errParse := uuid.Parse(req.GetUserID())
 	var users []*pr.User
 	if errParse != nil {
@@ -38,7 +20,7 @@ func (s *UserCommServer) GetFriends(ctx context.Context, req *pr.GetFriendsReque
 	return &pr.GetFriendsResponse{Friends: users}, nil
 }
 
-func (s *UserCommServer) SendFriendsRequest(ctx context.Context, req *pr.SendFriendRequestReq) (*pr.SendFriendRequestResp, error) {
+func (s *UserServer) SendFriendsRequest(ctx context.Context, req *pr.SendFriendRequestReq) (*pr.SendFriendRequestResp, error) {
 	userSenderID, errParse := uuid.Parse(req.GetUserID())
 	if errParse != nil {
 		return &pr.SendFriendRequestResp{}, fmt.Errorf("error while parsing user sender ID, %s", errParse)
@@ -54,7 +36,7 @@ func (s *UserCommServer) SendFriendsRequest(ctx context.Context, req *pr.SendFri
 	return &pr.SendFriendRequestResp{}, nil
 }
 
-func (s *UserCommServer) AcceptFriendsRequest(ctx context.Context, req *pr.AcceptFriendsRequestReq) (*pr.AcceptFriendsRequestResp, error) {
+func (s *UserServer) AcceptFriendsRequest(ctx context.Context, req *pr.AcceptFriendsRequestReq) (*pr.AcceptFriendsRequestResp, error) {
 	userReceiverID, errParse := uuid.Parse(req.GetUserID())
 	if errParse != nil {
 		return &pr.AcceptFriendsRequestResp{}, fmt.Errorf("error while parsing user receiver ID, %s", errParse)
@@ -70,7 +52,7 @@ func (s *UserCommServer) AcceptFriendsRequest(ctx context.Context, req *pr.Accep
 	return &pr.AcceptFriendsRequestResp{}, nil
 }
 
-func (s *UserCommServer) DeclineFriendsRequest(ctx context.Context, req *pr.DeclineFriendsRequestReq) (*pr.DeclineFriendsRequestResp, error) {
+func (s *UserServer) DeclineFriendsRequest(ctx context.Context, req *pr.DeclineFriendsRequestReq) (*pr.DeclineFriendsRequestResp, error) {
 	userReceiverID, errParse := uuid.Parse(req.UserID)
 	if errParse != nil {
 		return &pr.DeclineFriendsRequestResp{}, fmt.Errorf("error while parsing user receiver ID, %s", errParse)
@@ -86,7 +68,7 @@ func (s *UserCommServer) DeclineFriendsRequest(ctx context.Context, req *pr.Decl
 	return &pr.DeclineFriendsRequestResp{}, nil
 }
 
-func (s *UserCommServer) FindUser(ctx context.Context, req *pr.FindUserRequest) (*pr.FindUserResponse, error) {
+func (s *UserServer) FindUser(ctx context.Context, req *pr.FindUserRequest) (*pr.FindUserResponse, error) {
 	user, err := s.userCommRepo.FindUser(ctx, req.GetUserEmail())
 	if err != nil {
 		return &pr.FindUserResponse{}, fmt.Errorf("error while find user, %s", err)
@@ -94,7 +76,7 @@ func (s *UserCommServer) FindUser(ctx context.Context, req *pr.FindUserRequest) 
 	return &pr.FindUserResponse{Friend: user}, nil
 }
 
-func (s *UserCommServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) (*pr.GetRequestResp, error) {
+func (s *UserServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) (*pr.GetRequestResp, error) {
 	userID, errParse := uuid.Parse(req.GetUserID())
 	var users []*pr.User
 	if errParse != nil {
