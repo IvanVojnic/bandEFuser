@@ -37,7 +37,7 @@ func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID, use
 	defer rowsFriends.Close()
 	for rowsFriends.Next() {
 		var user pr.User
-		errScan := rowsFriends.Scan(&user.UserID, &user.Name)
+		errScan := rowsFriends.Scan(&user.ID, &user.Name)
 		if errScan != nil {
 			return fmt.Errorf("get all friends scan rows error %w", errScan)
 		}
@@ -86,7 +86,7 @@ func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSender
 // FindUser used to find user by email
 func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*pr.User, error) {
 	var user pr.User
-	err := r.db.QueryRow(ctx, "select users.id, users.email from users where users.email=$1", userEmail).Scan(&user.UserID, &user.Name, &user.Email)
+	err := r.db.QueryRow(ctx, "select users.id, users.email from users where users.email=$1", userEmail).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
 		return &user, fmt.Errorf("error: cannot get id, %w", err)
 	}
@@ -104,7 +104,7 @@ func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID, use
 	defer rowsFriendsReq.Close()
 	for rowsFriendsReq.Next() {
 		var user pr.User
-		errScan := rowsFriendsReq.Scan(&user.UserID, &user.Name)
+		errScan := rowsFriendsReq.Scan(&user.ID, &user.Name)
 		if errScan != nil {
 			return fmt.Errorf("get all friends requests scan rows error %w", errScan)
 		}

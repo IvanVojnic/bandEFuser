@@ -44,7 +44,7 @@ message GetFriendsResponse {
 }
 
 message User {
-  string userID = 1;
+  string ID = 1;
   string name = 2;
   string email = 3;
 }

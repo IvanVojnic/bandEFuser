@@ -4,6 +4,7 @@ import (
 	"github.com/IvanVojnic/bandEFuser/internal/config"
 	"github.com/IvanVojnic/bandEFuser/internal/repository"
 	"github.com/IvanVojnic/bandEFuser/internal/rpc"
+	"github.com/IvanVojnic/bandEFuser/internal/service"
 	pr "github.com/IvanVojnic/bandEFuser/proto"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -33,9 +34,11 @@ func main() {
 	defer repository.ClosePool(db)
 	userAuthRepo := repository.NewUserPostgres(db)
 	userCommRepo := repository.NewUserCommPostgres(db)
-	userServ := rpc.NewUserAuthServer(userAuthRepo, userCommRepo)
+	userAuthServ := service.NewUserAuthServer(userAuthRepo)
+	userCommServ := service.NewUserCommServer(userCommRepo)
+	userGRPC := rpc.NewUserAuthServer(userAuthServ, userCommServ)
 
-	pr.RegisterUserServer(s, userServ)
+	pr.RegisterUserServer(s, userGRPC)
 	listen, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		defer logrus.Fatalf("error while listening port: %e", err)
