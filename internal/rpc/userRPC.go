@@ -3,7 +3,6 @@ package rpc
 import (
 	"context"
 	"fmt"
-	"github.com/IvanVojnic/bandEFuser/models"
 	pr "github.com/IvanVojnic/bandEFuser/proto"
 	"github.com/google/uuid"
 )
@@ -14,7 +13,7 @@ type UserComm interface {
 	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	FindUser(ctx context.Context, userEmail string) (*pr.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID) ([]models.User, error)
+	GetRequest(ctx context.Context, userID uuid.UUID, users []*pr.User) error
 }
 
 type UserCommServer struct {
