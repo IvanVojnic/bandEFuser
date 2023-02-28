@@ -6,7 +6,7 @@ import (
 	"github.com/IvanVojnic/bandEFuser/models"
 	pr "github.com/IvanVojnic/bandEFuser/proto"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/sirupsen/logrus"
 )
 
 type Auth interface {
@@ -38,6 +38,10 @@ func (s *UserServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.Sig
 	user := models.User{ID: uuid.New(), Email: req.GetEmail(), Name: req.GetName(), Password: req.GetPassword()}
 	err := s.authServ.SignUp(ctx, &user)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"Error creating user": err,
+			"user":                user,
+		}).Errorf("error while creating, %s", err)
 		return &pr.SignUpResponse{IsCreated: false}, fmt.Errorf("error while creating user")
 	}
 	return &pr.SignUpResponse{IsCreated: true}, nil
@@ -48,12 +52,11 @@ func (s *UserServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr.Sig
 	user := models.User{Name: req.GetName(), Password: password}
 	tokens, err := s.authServ.SignIn(ctx, &user)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"Error logging user": err,
+			"user":               user,
+		}).Errorf("error while logging, %s", err)
 		return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while login user, %s", err)
 	}
 	return &pr.SignInResponse{At: tokens.AccessToken, Rt: tokens.RefreshToken}, fmt.Errorf("error while loogin, wrong credentials %s", err)
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
