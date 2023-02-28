@@ -1,13 +1,17 @@
 package main
 
 import (
+	"net"
+
 	"github.com/IvanVojnic/bandEFuser/internal/config"
 	"github.com/IvanVojnic/bandEFuser/internal/repository"
 	"github.com/IvanVojnic/bandEFuser/internal/rpc"
+	"github.com/IvanVojnic/bandEFuser/internal/service"
 	pr "github.com/IvanVojnic/bandEFuser/proto"
+
 	"github.com/sirupsen/logrus"
+
 	"google.golang.org/grpc"
-	"net"
 )
 
 func main() {
@@ -22,8 +26,6 @@ func main() {
 			"config": cfg,
 		}).Fatal("failed to get config")
 	}
-	//var userAuthServ *rpc.UserServer
-	//var userServ *rpc.UserCommServer
 	db, err := repository.NewPostgresDB(cfg)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
@@ -32,11 +34,14 @@ func main() {
 	}
 	defer repository.ClosePool(db)
 	userAuthRepo := repository.NewUserPostgres(db)
-	//	userCommRepo := repository.NewUserCommPostgres(db)
-	userAuthServ := rpc.NewUserAuthServer(userAuthRepo)
-	//	userServ := rpc.NewUserCommServer(userCommRepo)
+	userCommRepo := repository.NewUserCommPostgres(db)
+	userAuthServ := service.NewUserAuthServer(userAuthRepo)
+	userCommServ := service.NewUserCommServer(userCommRepo)
+	userAuthGRPC := rpc.NewUserAuthServer(userAuthServ)
+	userCommGRPC := rpc.NewUserCommServer(userCommServ)
 
-	pr.RegisterUserServer(s, userAuthServ)
+	pr.RegisterUserServer(s, userAuthGRPC)
+	pr.RegisterUserServer(s, userCommGRPC)
 	listen, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		defer logrus.Fatalf("error while listening port: %e", err)

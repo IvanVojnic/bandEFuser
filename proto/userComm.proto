@@ -5,33 +5,12 @@ option go_package = "github.com/IvanVojnic/bandEFuser/proto";
 package user;
 
 service user {
-  rpc SignUp(SignUpRequest) returns (SignUpResponse){}
-  rpc SignIn(SignInRequest) returns (SignInResponse){}
   rpc GetFriends(GetFriendsRequest) returns (GetFriendsResponse){}
   rpc SendFriendRequest(SendFriendRequestReq) returns (SendFriendRequestResp){}
   rpc AcceptFriendsRequest(AcceptFriendsRequestReq) returns (AcceptFriendsRequestResp){}
+  rpc DeclineFriendsRequest(DeclineFriendsRequestReq) returns (DeclineFriendsRequestResp){}
   rpc FindUser(FindUserRequest) returns (FindUserResponse){}
-  rpc GetRequest(GetRequestReq) returns (GetFriendsResponse){}
-}
-
-message SignUpRequest {
-  string name = 1;
-  string email = 2;
-  string password = 3;
-}
-
-message SignUpResponse {
-  bool isCreated = 1;
-}
-
-message SignInRequest {
-  string name = 1;
-  string password = 2;
-}
-
-message SignInResponse {
-  string at = 1;
-  string rt = 2;
+  rpc GetRequest(GetRequestReq) returns (GetRequestResp){}
 }
 
 message GetFriendsRequest {
@@ -43,7 +22,7 @@ message GetFriendsResponse {
 }
 
 message User {
-  string userID = 1;
+  string ID = 1;
   string name = 2;
   string email = 3;
 }
@@ -63,6 +42,15 @@ message AcceptFriendsRequestReq{
 }
 
 message AcceptFriendsRequestResp{
+
+}
+
+message DeclineFriendsRequestReq{
+  string userSenderID = 1;
+  string userID = 2;
+}
+
+message DeclineFriendsRequestResp{
 
 }
 
