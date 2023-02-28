@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/IvanVojnic/bandEFuser/models"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 

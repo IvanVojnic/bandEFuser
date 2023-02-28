@@ -3,8 +3,10 @@ package rpc
 import (
 	"context"
 	"fmt"
+
 	"github.com/IvanVojnic/bandEFuser/models"
 	pr "github.com/IvanVojnic/bandEFuser/proto"
+
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
