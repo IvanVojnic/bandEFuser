@@ -23,8 +23,6 @@ func main() {
 			"config": cfg,
 		}).Fatal("failed to get config")
 	}
-	//var userAuthServ *rpc.UserServer
-	//var userServ *rpc.UserCommServer
 	db, err := repository.NewPostgresDB(cfg)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
@@ -36,9 +34,11 @@ func main() {
 	userCommRepo := repository.NewUserCommPostgres(db)
 	userAuthServ := service.NewUserAuthServer(userAuthRepo)
 	userCommServ := service.NewUserCommServer(userCommRepo)
-	userGRPC := rpc.NewUserAuthServer(userAuthServ, userCommServ)
+	userAuthGRPC := rpc.NewUserAuthServer(userAuthServ)
+	userCommGRPC := rpc.NewUserCommServer(userCommServ)
 
-	pr.RegisterUserServer(s, userGRPC)
+	pr.RegisterUserServer(s, userAuthGRPC)
+	pr.RegisterUserServer(s, userCommGRPC)
 	listen, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		defer logrus.Fatalf("error while listening port: %e", err)

@@ -15,26 +15,16 @@ type Auth interface {
 	SignIn(ctx context.Context, user *models.User) (models.Tokens, error)
 }
 
-type UserComm interface {
-	GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
-	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
-	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
-	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
-	FindUser(ctx context.Context, userEmail string) (*models.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
-}
-
-type UserServer struct {
+type UserAuthServer struct {
 	pr.UnimplementedUserServer
-	authServ     Auth
-	userCommServ UserComm
+	authServ Auth
 }
 
-func NewUserAuthServer(authServ Auth, userCommServ UserComm) *UserServer {
-	return &UserServer{authServ: authServ, userCommServ: userCommServ}
+func NewUserAuthServer(authServ Auth) *UserAuthServer {
+	return &UserAuthServer{authServ: authServ}
 }
 
-func (s *UserServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.SignUpResponse, error) {
+func (s *UserAuthServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.SignUpResponse, error) {
 	user := models.User{ID: uuid.New(), Email: req.GetEmail(), Name: req.GetName(), Password: req.GetPassword()}
 	err := s.authServ.SignUp(ctx, &user)
 	if err != nil {
@@ -47,7 +37,7 @@ func (s *UserServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.Sig
 	return &pr.SignUpResponse{IsCreated: true}, nil
 }
 
-func (s *UserServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr.SignInResponse, error) {
+func (s *UserAuthServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr.SignInResponse, error) {
 	password := req.GetPassword()
 	user := models.User{Name: req.GetName(), Password: password}
 	tokens, err := s.authServ.SignIn(ctx, &user)
