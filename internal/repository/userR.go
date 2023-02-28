@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
-	pr "github.com/IvanVojnic/bandEFuser/proto"
+	"github.com/IvanVojnic/bandEFuser/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -27,7 +27,7 @@ func NewUserCommPostgres(db *pgxpool.Pool) *UserCommPostgres {
 }
 
 // GetFriends used to send friends
-func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID, users []*pr.User) error {
+func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID, users []*models.User) error {
 	rowsFriends, err := r.db.Query(ctx,
 		`select users.id, users.name from users u
     		inner join friends f on f.userReceiver = u.id or f.userSender = u.id where u.id=$1 and f.status=$2`, userID, Accept)
@@ -36,7 +36,7 @@ func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID, use
 	}
 	defer rowsFriends.Close()
 	for rowsFriends.Next() {
-		var user pr.User
+		var user models.User
 		errScan := rowsFriends.Scan(&user.ID, &user.Name)
 		if errScan != nil {
 			return fmt.Errorf("get all friends scan rows error %w", errScan)
@@ -84,8 +84,8 @@ func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSender
 }
 
 // FindUser used to find user by email
-func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*pr.User, error) {
-	var user pr.User
+func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*models.User, error) {
+	var user models.User
 	err := r.db.QueryRow(ctx, "select users.id, users.email from users where users.email=$1", userEmail).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
 		return &user, fmt.Errorf("error: cannot get id, %w", err)
@@ -94,7 +94,7 @@ func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*pr.
 }
 
 // GetRequest used to send request to be a friends
-func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID, users []*pr.User) error {
+func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID, users []*models.User) error {
 	rowsFriendsReq, err := r.db.Query(ctx,
 		`select users.id, users.name from users u
     		inner join friends f on f.userReceiver = u.id where u.id=$1 and f.status=$2`, userID, NoAnswer)
@@ -103,7 +103,7 @@ func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID, use
 	}
 	defer rowsFriendsReq.Close()
 	for rowsFriendsReq.Next() {
-		var user pr.User
+		var user models.User
 		errScan := rowsFriendsReq.Scan(&user.ID, &user.Name)
 		if errScan != nil {
 			return fmt.Errorf("get all friends requests scan rows error %w", errScan)

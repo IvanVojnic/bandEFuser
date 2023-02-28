@@ -16,12 +16,12 @@ type Auth interface {
 }
 
 type UserComm interface {
-	GetFriends(ctx context.Context, userID uuid.UUID, users []*pr.User) error
+	GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
 	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
-	FindUser(ctx context.Context, userEmail string) (*pr.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID, users []*pr.User) error
+	FindUser(ctx context.Context, userEmail string) (*models.User, error)
+	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 }
 
 type UserServer struct {

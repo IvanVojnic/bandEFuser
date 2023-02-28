@@ -13,9 +13,12 @@ func (s *UserServer) GetFriends(ctx context.Context, req *pr.GetFriendsRequest) 
 	if errParse != nil {
 		return &pr.GetFriendsResponse{Friends: users}, fmt.Errorf("error while parse userID, %s", errParse)
 	}
-	err := s.userCommServ.GetFriends(ctx, userID, users)
+	usersDB, err := s.userCommServ.GetFriends(ctx, userID)
 	if err != nil {
 		return &pr.GetFriendsResponse{Friends: users}, fmt.Errorf("error while gettingg friends from db, %s", err)
+	}
+	for _, user := range usersDB {
+		users = append(users, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetFriendsResponse{Friends: users}, nil
 }
@@ -61,7 +64,7 @@ func (s *UserServer) DeclineFriendsRequest(ctx context.Context, req *pr.DeclineF
 	if errParse != nil {
 		return &pr.DeclineFriendsRequestResp{}, fmt.Errorf("error while parsing user sender ID, %s", errParse)
 	}
-	err := s.userCommServ.AcceptFriendsRequest(ctx, userSenderID, userReceiverID)
+	err := s.userCommServ.DeclineFriendsRequest(ctx, userSenderID, userReceiverID)
 	if err != nil {
 		return &pr.DeclineFriendsRequestResp{}, fmt.Errorf("error while decling request, %s", err)
 	}
@@ -73,7 +76,7 @@ func (s *UserServer) FindUser(ctx context.Context, req *pr.FindUserRequest) (*pr
 	if err != nil {
 		return &pr.FindUserResponse{}, fmt.Errorf("error while find user, %s", err)
 	}
-	return &pr.FindUserResponse{Friend: user}, nil
+	return &pr.FindUserResponse{Friend: &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email}}, nil
 }
 
 func (s *UserServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) (*pr.GetRequestResp, error) {
@@ -82,9 +85,12 @@ func (s *UserServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) (*pr
 	if errParse != nil {
 		return &pr.GetRequestResp{Users: users}, fmt.Errorf("error while parse userID, %s", errParse)
 	}
-	err := s.userCommServ.GetRequest(ctx, userID, users)
+	usersDB, err := s.userCommServ.GetRequest(ctx, userID)
 	if err != nil {
 		return &pr.GetRequestResp{Users: users}, fmt.Errorf("error while getting requests to be a friend from db, %s", err)
+	}
+	for _, user := range usersDB {
+		users = append(users, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetRequestResp{Users: users}, nil
 }
