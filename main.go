@@ -1,14 +1,16 @@
 package main
 
 import (
+	"net"
+
 	"github.com/IvanVojnic/bandEFuser/internal/config"
 	"github.com/IvanVojnic/bandEFuser/internal/repository"
 	"github.com/IvanVojnic/bandEFuser/internal/rpc"
 	"github.com/IvanVojnic/bandEFuser/internal/service"
 	pr "github.com/IvanVojnic/bandEFuser/proto"
 	"github.com/sirupsen/logrus"
+
 	"google.golang.org/grpc"
-	"net"
 )
 
 func main() {

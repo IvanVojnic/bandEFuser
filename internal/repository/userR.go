@@ -1,8 +1,10 @@
+// Package repository consists of communicates methods for user
 package repository
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/IvanVojnic/bandEFuser/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -13,8 +15,12 @@ type UserCommPostgres struct {
 	db *pgxpool.Pool
 }
 
+// Status used to define types of statuses
 type Status int
 
+// Decline define negative status
+// Accept define positive status
+// NoAnswer define neutral status
 const (
 	Decline Status = iota
 	Accept
@@ -26,8 +32,8 @@ func NewUserCommPostgres(db *pgxpool.Pool) *UserCommPostgres {
 	return &UserCommPostgres{db: db}
 }
 
-// GetFriends used to send friends
-func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error) {
+// GetFriends used to get friends
+func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error) { // nolint:dupl, gocritic
 	var users []*models.User
 	rowsFriends, err := r.db.Query(ctx,
 		`SELECT users.id, users.name FROM users
@@ -48,7 +54,7 @@ func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]
 }
 
 // SendFriendsRequest used to send requests for user
-func (r *UserCommPostgres) SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error {
+func (r *UserCommPostgres) SendFriendsRequest(ctx context.Context, userSender, userReceiver uuid.UUID) error {
 	friendsID := uuid.New()
 	_, err := r.db.Exec(ctx, `INSERT INTO friends (id, userSender, userReceiver, status_id) VALUES($1, $2, $3, $4)`,
 		friendsID, userSender, userReceiver, NoAnswer)
@@ -59,7 +65,7 @@ func (r *UserCommPostgres) SendFriendsRequest(ctx context.Context, userSender uu
 }
 
 // AcceptFriendsRequest used to accept request
-func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error {
+func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderID, userID uuid.UUID) error {
 	_, err := r.db.Exec(ctx,
 		`UPDATE friends 
 			SET status=$1 
@@ -71,8 +77,8 @@ func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderI
 	return nil
 }
 
-// AcceptFriendsRequest used to accept request
-func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error {
+// DeclineFriendsRequest used to decline request
+func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSenderID, userID uuid.UUID) error {
 	_, err := r.db.Exec(ctx,
 		`UPDATE friends 
 			SET status=$1 
@@ -94,8 +100,8 @@ func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*mod
 	return &user, nil
 }
 
-// GetRequest used to send request to be a friends
-func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error) {
+// GetRequest used to get request to be a friends
+func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error) { // nolint:dupl, gocritic
 	var users []*models.User
 	rowsFriendsReq, err := r.db.Query(ctx,
 		`SELECT users.id, users.name FROM users u

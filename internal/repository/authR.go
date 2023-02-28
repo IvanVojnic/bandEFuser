@@ -1,8 +1,10 @@
+// Package repository consists of auths methods for user
 package repository
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/IvanVojnic/bandEFuser/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -13,7 +15,7 @@ type UserPostgres struct {
 	db *pgxpool.Pool
 }
 
-// NewUserAuthPostgres used to init UsesAP
+// NewUserPostgres used to init UsesAP
 func NewUserPostgres(db *pgxpool.Pool) *UserPostgres {
 	return &UserPostgres{db: db}
 }
@@ -37,7 +39,7 @@ func (r *UserPostgres) UpdateRefreshToken(ctx context.Context, rt string, id uui
 	return nil
 }
 
-// SignInUser used to sign in user
+// SignIn used to sign in user
 func (r *UserPostgres) SignIn(ctx context.Context, user *models.User) error {
 	err := r.db.QueryRow(ctx,
 		`SELECT users.id, users.name, users.password FROM users WHERE users.name=$1`,

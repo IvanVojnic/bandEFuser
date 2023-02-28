@@ -1,3 +1,4 @@
+// Package models model User
 package models
 
 import "github.com/google/uuid"
@@ -7,6 +8,6 @@ type User struct {
 	ID           uuid.UUID `json:"id" db:"id"`
 	Email        string    `json:"email" db:"email"`
 	Password     string    `json:"password" db:"password"`
-	Name         string    `json:"name" db:"name"'`
+	Name         string    `json:"name" db:"name"`
 	RefreshToken string    `json:"refreshToken" db:"refreshToken"`
 }

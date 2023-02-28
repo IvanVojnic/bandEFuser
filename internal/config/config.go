@@ -1,7 +1,9 @@
+// Package config to db
 package config
 
 import (
 	"fmt"
+
 	"github.com/caarlos0/env/v7"
 )
 
@@ -20,6 +22,5 @@ func NewConfig() (*Config, error) {
 	if err := env.Parse(Cfg); err != nil {
 		return nil, fmt.Errorf("config - NewConfig: %v", err)
 	}
-
 	return Cfg, nil
 }
