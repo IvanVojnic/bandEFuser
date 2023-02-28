@@ -11,13 +11,15 @@ func Test_SignUp(t *testing.T) {
 	ctx := context.Background()
 	repos := NewUserPostgres(db)
 	err := repos.SignUp(ctx, &testUserValidData)
-	require.NoError(t, err, "get friends error")
+	require.NoError(t, err, "create user error")
 }
 
 // Test_GetFriends used to get friends
 func Test_SignIn(t *testing.T) {
 	ctx := context.Background()
 	repos := NewUserPostgres(db)
-	err := repos.SignIn(ctx, &testUserValidData)
-	require.NoError(t, err, "get friends error")
+	errSU := repos.SignUp(ctx, &testUserValidData)
+	require.NoError(t, errSU, "create user error")
+	errSI := repos.SignIn(ctx, &testUserValidData)
+	require.NoError(t, errSI, "login user error")
 }

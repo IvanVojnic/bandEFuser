@@ -100,8 +100,17 @@ func Test_GetFriends(t *testing.T) {
 // Test_SendFriendsRequest used to send request
 func Test_SendFriendsRequest(t *testing.T) {
 	ctx := context.Background()
-	repos := NewUserCommPostgres(db)
-	err := repos.SendFriendsRequest(ctx, testRequestValidData.SenderID, testRequestValidData.ReceiverID)
+	userSenderID := uuid.New()
+	userReceiverID := uuid.New()
+	sender := models.User{Name: "u1", Email: "u1@g.c", Password: "u1u1", ID: userSenderID}
+	receiver := models.User{Name: "u2", Email: "u2@g.c", Password: "u2u2", ID: userReceiverID}
+	repos := NewUserPostgres(db)
+	errSender := repos.SignUp(ctx, &sender)
+	errReceiver := repos.SignUp(ctx, &receiver)
+	require.NoError(t, errSender, "create user error")
+	require.NoError(t, errReceiver, "create user error")
+	reposSend := NewUserCommPostgres(db)
+	err := reposSend.SendFriendsRequest(ctx, userSenderID, userReceiverID)
 	require.NoError(t, err, "send request error")
 }
 
@@ -124,8 +133,11 @@ func Test_DeclineFriendsRequest(t *testing.T) {
 // Test_FindUser used to find user
 func Test_FindUser(t *testing.T) {
 	ctx := context.Background()
-	repos := NewUserCommPostgres(db)
-	_, err := repos.FindUser(ctx, testUserValidData.Email)
+	repos := NewUserPostgres(db)
+	errSU := repos.SignUp(ctx, &testUserValidData)
+	require.NoError(t, errSU, "create user error")
+	reposComm := NewUserCommPostgres(db)
+	_, err := reposComm.FindUser(ctx, testUserValidData.Email)
 	require.NoError(t, err, "find user error")
 }
 
