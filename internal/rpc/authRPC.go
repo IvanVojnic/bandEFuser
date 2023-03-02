@@ -18,7 +18,7 @@ type Auth interface {
 }
 
 type UserAuthServer struct {
-	pr.UnimplementedUserServer
+	pr.UnimplementedUserAuthServer
 	authServ Auth
 }
 

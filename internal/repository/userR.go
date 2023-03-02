@@ -121,3 +121,12 @@ func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) ([]
 	}
 	return users, nil
 }
+
+func (r *UserCommPostgres) GetUsers(ctx context.Context, usersID *[]uuid.UUID) (*[]models.User, error) {
+	var users []models.User
+	rowsUsersReq, err := r.db.Query(ctx,
+		`SELECT users.id, users.name, users.email 
+			 FROM users 
+			 WHERE users.id = ANY($1::)`, userID, NoAnswer)
+	return &users, nil
+}

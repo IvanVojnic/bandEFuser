@@ -12,16 +12,17 @@ import (
 )
 
 type UserComm interface {
-	GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
+	GetFriends(ctx context.Context, userID uuid.UUID) (*[]models.User, error)
 	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
 	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
+	GetRequest(ctx context.Context, userID uuid.UUID) (*[]models.User, error)
+	GetUsers(ctx context.Context, usersID *[]uuid.UUID) (*[]models.User, error)
 }
 
 type UserCommServer struct {
-	pr.UnimplementedUserServer
+	pr.UnimplementedUserCommServer
 	userCommServ UserComm
 }
 
@@ -47,7 +48,7 @@ func (s *UserCommServer) GetFriends(ctx context.Context, req *pr.GetFriendsReque
 		}).Errorf("error while getting users, %s", err)
 		return &pr.GetFriendsResponse{Friends: users}, fmt.Errorf("error while gettingg friends from db, %s", err)
 	}
-	for _, user := range usersDB {
+	for _, user := range *usersDB {
 		users = append(users, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetFriendsResponse{Friends: users}, nil
@@ -164,8 +165,29 @@ func (s *UserCommServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) 
 		}).Errorf("error while getting requests, %s", err)
 		return &pr.GetRequestResp{Users: users}, fmt.Errorf("error while getting requests to be a friend from db, %s", err)
 	}
-	for _, user := range usersDB {
+	for _, user := range *usersDB {
 		users = append(users, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetRequestResp{Users: users}, nil
+}
+
+func (s *UserCommServer) GetUsers(ctx context.Context, req *pr.GetUsersRequest) (*pr.GetUsersResponse, error) {
+	usersStrID := req.GetUsersID()
+	var usersID []uuid.UUID
+	for _, userStrID := range usersStrID {
+		userID, errParseID := uuid.Parse(userStrID)
+		if errParseID != nil {
+			return &pr.GetUsersResponse{}, fmt.Errorf("error while parsing userID, %s", errParseID)
+		}
+		usersID = append(usersID, userID)
+	}
+	usersDB, err := s.userCommServ.GetUsers(ctx, &usersID)
+	if err != nil {
+		return &pr.GetUsersResponse{}, fmt.Errorf("error while getting users, %s", err)
+	}
+	var usersGRPC []*pr.User
+	for _, user := range *usersDB {
+		usersGRPC = append(usersGRPC, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
+	}
+	return &pr.GetUsersResponse{Users: usersGRPC}, nil
 }
