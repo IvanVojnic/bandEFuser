@@ -2,9 +2,9 @@ syntax = "proto3";
 
 option go_package = "github.com/IvanVojnic/bandEFuser/proto";
 
-package user;
+package userComm;
 
-service user {
+service userComm {
   rpc GetFriends(GetFriendsRequest) returns (GetFriendsResponse){}
   rpc SendFriendRequest(SendFriendRequestReq) returns (SendFriendRequestResp){}
   rpc AcceptFriendsRequest(AcceptFriendsRequestReq) returns (AcceptFriendsRequestResp){}
