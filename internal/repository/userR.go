@@ -127,6 +127,18 @@ func (r *UserCommPostgres) GetUsers(ctx context.Context, usersID *[]uuid.UUID) (
 	rowsUsersReq, err := r.db.Query(ctx,
 		`SELECT users.id, users.name, users.email 
 			 FROM users 
-			 WHERE users.id = ANY($1::)`, userID, NoAnswer)
+			 WHERE users.id = ANY($1::uuid[])`, usersID)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting users from db, %s", err)
+	}
+	defer rowsUsersReq.Close()
+	for rowsUsersReq.Next() {
+		var user models.User
+		errScan := rowsUsersReq.Scan(&user.ID, &user.Name, &user.Email)
+		if errScan != nil {
+			return nil, fmt.Errorf("get all friends requests scan rows error %w", errScan)
+		}
+		users = append(users, user)
+	}
 	return &users, nil
 }
