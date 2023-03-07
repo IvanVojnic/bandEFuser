@@ -31,8 +31,7 @@ func (s *UserAuthServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr
 	err := s.authServ.SignUp(ctx, &user)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"Error creating user": err,
-			"user":                user,
+			"user": user,
 		}).Errorf("error while creating, %s", err)
 		return &pr.SignUpResponse{IsCreated: false}, fmt.Errorf("error while creating user")
 	}
@@ -45,8 +44,7 @@ func (s *UserAuthServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr
 	tokens, err := s.authServ.SignIn(ctx, &user)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"Error logging user": err,
-			"user":               user,
+			"user": user,
 		}).Errorf("error while logging, %s", err)
 		return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while login user, %s", err)
 	}
