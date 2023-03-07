@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/IvanVojnic/bandEFuser/models"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -40,12 +41,13 @@ func (r *UserPostgres) UpdateRefreshToken(ctx context.Context, rt string, id uui
 }
 
 // SignIn used to sign in user
-func (r *UserPostgres) SignIn(ctx context.Context, user *models.User) error {
+func (r *UserPostgres) SignIn(ctx context.Context, login models.Login) (*models.User, error) {
+	var user *models.User
 	err := r.db.QueryRow(ctx,
 		`SELECT users.id, users.name, users.password FROM users WHERE users.name=$1`,
-		user.Name).Scan(&user.ID, &user.Name, &user.Password)
+		login.Name).Scan(&user.ID, &user.Name, &user.Password)
 	if err != nil {
-		return fmt.Errorf("error while getting user %w", err)
+		return nil, fmt.Errorf("error while getting user %w", err)
 	}
-	return nil
+	return user, nil
 }

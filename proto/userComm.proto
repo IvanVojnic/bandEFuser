@@ -2,15 +2,16 @@ syntax = "proto3";
 
 option go_package = "github.com/IvanVojnic/bandEFuser/proto";
 
-package user;
+package userComm;
 
-service user {
+service userComm {
   rpc GetFriends(GetFriendsRequest) returns (GetFriendsResponse){}
   rpc SendFriendRequest(SendFriendRequestReq) returns (SendFriendRequestResp){}
   rpc AcceptFriendsRequest(AcceptFriendsRequestReq) returns (AcceptFriendsRequestResp){}
   rpc DeclineFriendsRequest(DeclineFriendsRequestReq) returns (DeclineFriendsRequestResp){}
   rpc FindUser(FindUserRequest) returns (FindUserResponse){}
   rpc GetRequest(GetRequestReq) returns (GetRequestResp){}
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse){}
 }
 
 message GetFriendsRequest {
@@ -67,5 +68,13 @@ message GetRequestReq{
 }
 
 message GetRequestResp{
+  repeated User users = 1;
+}
+
+message GetUsersRequest{
+  repeated string usersID = 1;
+}
+
+message GetUsersResponse{
   repeated User users = 1;
 }

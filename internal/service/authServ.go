@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/IvanVojnic/bandEFuser/models"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 
@@ -17,7 +18,7 @@ import (
 type Auth interface {
 	SignUp(ctx context.Context, user *models.User) error
 	UpdateRefreshToken(ctx context.Context, rt string, id uuid.UUID) error
-	SignIn(ctx context.Context, user *models.User) error
+	SignIn(ctx context.Context, user models.Login) (*models.User, error)
 }
 
 // AuthServer define service user auth struct
@@ -40,25 +41,24 @@ func (s *AuthServer) SignUp(ctx context.Context, user *models.User) error {
 }
 
 // SignIn used to sign in user
-func (s *AuthServer) SignIn(ctx context.Context, user *models.User) (models.Tokens, error) {
-	password := user.Password
-	err := s.authRepo.SignIn(ctx, user)
+func (s *AuthServer) SignIn(ctx context.Context, login *models.Login) (models.Tokens, error) {
+	userDB, err := s.authRepo.SignIn(ctx, *login)
 	if err != nil {
 		return models.Tokens{}, fmt.Errorf("error while login user, %s", err)
 	}
-	errPasswordCheck := CheckPasswordHash(password, user.Password)
+	errPasswordCheck := CheckPasswordHash(login.Password, userDB.Password)
 	if errPasswordCheck != nil {
 		return models.Tokens{}, fmt.Errorf("error while loogin, wrong credentials %s", err)
 	}
-	rt, errRT := generateToken(user.ID, TokenRTDuration)
+	rt, errRT := generateToken(userDB.ID, TokenRTDuration, SigningKeyRefresh)
 	if errRT != nil {
 		return models.Tokens{}, fmt.Errorf("error while generate rt, %s", err)
 	}
-	at, errAT := generateToken(user.ID, TokenATDuration)
+	at, errAT := generateToken(userDB.ID, TokenATDuration, SigningKeyAccess)
 	if errAT != nil {
 		return models.Tokens{}, fmt.Errorf("error while generate at, %s", err)
 	}
-	errUpdateRT := s.authRepo.UpdateRefreshToken(ctx, rt, user.ID)
+	errUpdateRT := s.authRepo.UpdateRefreshToken(ctx, rt, userDB.ID)
 	if errUpdateRT != nil {
 		return models.Tokens{}, fmt.Errorf("error while set rt, %s", err)
 	}
@@ -72,12 +72,14 @@ func (s *AuthServer) UpdateRefreshToken(ctx context.Context, rt string, id uuid.
 
 // CheckPasswordHash used to compare hashed and not hashed passwords
 func CheckPasswordHash(password, hash string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
-// SigningKey is a secret key for tokens
-const SigningKey = "barband"
+// SigningKeyAccess is a secret key for tokens
+const SigningKeyAccess = "al5jkvkls83l9cw6l"
+
+// SigningKeyRefresh is a secret key for tokens
+const SigningKeyRefresh = "jkvf7834lkjbas98"
 
 // TokenRTDuration is a duration of rt life
 const TokenRTDuration = 1 * time.Hour
@@ -86,7 +88,7 @@ const TokenRTDuration = 1 * time.Hour
 const TokenATDuration = 100 * time.Minute
 
 // generateToken used to generate tokens with id
-func generateToken(id uuid.UUID, tokenDuration time.Duration) (string, error) {
+func generateToken(id uuid.UUID, tokenDuration time.Duration, key string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &models.TokenClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(tokenDuration).Unix(),
@@ -94,5 +96,5 @@ func generateToken(id uuid.UUID, tokenDuration time.Duration) (string, error) {
 		},
 		UserID: id,
 	})
-	return token.SignedString([]byte(SigningKey))
+	return token.SignedString([]byte(key))
 }
