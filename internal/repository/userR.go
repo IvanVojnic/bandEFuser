@@ -34,8 +34,8 @@ func NewUserCommPostgres(db *pgxpool.Pool) *UserCommPostgres {
 }
 
 // GetFriends used to get friends
-func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error) { // nolint:dupl, gocritic
-	var users []*models.User
+func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) (*[]models.User, error) { // nolint:dupl, gocritic
+	var users *[]models.User
 	rowsFriends, err := r.db.Query(ctx,
 		`SELECT users.id, users.name FROM users
     		INNER JOIN friends ON friends.userReceiver = users.id OR friends.userSender = users.id WHERE users.id=$1 AND friends.status=$2`, userID, Accept)
@@ -49,7 +49,7 @@ func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]
 		if errScan != nil {
 			return users, fmt.Errorf("get all friends scan rows error %w", errScan)
 		}
-		users = append(users, &user)
+		*users = append(*users, user)
 	}
 	return users, nil
 }
@@ -102,8 +102,8 @@ func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*mod
 }
 
 // GetRequest used to get request to be a friends
-func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error) { // nolint:dupl, gocritic
-	var users []*models.User
+func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) (*[]models.User, error) { // nolint:dupl, gocritic
+	var users *[]models.User
 	rowsFriendsReq, err := r.db.Query(ctx,
 		`SELECT users.id, users.name FROM users u
     		INNER JOIN friends f ON f.userReceiver = u.id WHERE u.id=$1 AND f.status=$2`, userID, NoAnswer)
@@ -117,7 +117,7 @@ func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) ([]
 		if errScan != nil {
 			return users, fmt.Errorf("get all friends requests scan rows error %w", errScan)
 		}
-		users = append(users, &user)
+		*users = append(*users, user)
 	}
 	return users, nil
 }
