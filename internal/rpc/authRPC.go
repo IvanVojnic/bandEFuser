@@ -12,21 +12,25 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Auth interface define auth methods implemented from service
 type Auth interface {
 	SignUp(ctx context.Context, user *models.User) error
 	UpdateRefreshToken(ctx context.Context, rt string, id uuid.UUID) error
 	SignIn(ctx context.Context, user *models.User) (models.Tokens, error)
 }
 
+// UserAuthServer define user auth obj
 type UserAuthServer struct {
 	pr.UnimplementedUserAuthServer
 	authServ Auth
 }
 
+// NewUserAuthServer used to init user auth odj
 func NewUserAuthServer(authServ Auth) *UserAuthServer {
 	return &UserAuthServer{authServ: authServ}
 }
 
+// SignUp used to sign up
 func (s *UserAuthServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.SignUpResponse, error) {
 	user := models.User{ID: uuid.New(), Email: req.GetEmail(), Name: req.GetName(), Password: req.GetPassword()}
 	err := s.authServ.SignUp(ctx, &user)
@@ -39,6 +43,7 @@ func (s *UserAuthServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr
 	return &pr.SignUpResponse{IsCreated: true}, nil
 }
 
+// SignIn used to sign in
 func (s *UserAuthServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr.SignInResponse, error) {
 	password := req.GetPassword()
 	user := models.User{Name: req.GetName(), Password: password}

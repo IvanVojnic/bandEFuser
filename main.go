@@ -1,3 +1,4 @@
+// Package main is a main package used to start the program
 package main
 
 import (
@@ -15,7 +16,6 @@ import (
 )
 
 func main() {
-
 	var opts []grpc.ServerOption
 	s := grpc.NewServer(opts...)
 
@@ -44,7 +44,7 @@ func main() {
 
 	pr.RegisterUserAuthServer(s, userAuthGRPC)
 	pr.RegisterUserCommServer(s, userCommGRPC)
-	listen, err := net.Listen("tcp", ":8000")
+	listen, err := net.Listen("tcp", "1.1.1.1:8000")
 	if err != nil {
 		defer logrus.Fatalf("error while listening port: %e", err)
 	}

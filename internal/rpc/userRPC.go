@@ -11,28 +11,32 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// UserComm interface define user comm methods implemented from service
 type UserComm interface {
-	GetFriends(ctx context.Context, userID uuid.UUID) (*[]models.User, error)
+	GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
 	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID) (*[]models.User, error)
-	GetUsers(ctx context.Context, usersID *[]uuid.UUID) (*[]models.User, error)
+	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
+	GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error)
 }
 
+// UserCommServer define user comm obj
 type UserCommServer struct {
 	pr.UnimplementedUserCommServer
 	userCommServ UserComm
 }
 
+// NewUserCommServer used to init user comm odj
 func NewUserCommServer(userCommServ UserComm) *UserCommServer {
 	return &UserCommServer{userCommServ: userCommServ}
 }
 
-func (s *UserCommServer) GetFriends(ctx context.Context, req *pr.GetFriendsRequest) (*pr.GetFriendsResponse, error) {
+// GetFriends used to get friends
+func (s *UserCommServer) GetFriends(ctx context.Context, req *pr.GetFriendsRequest) (*pr.GetFriendsResponse, error) { // nolint:dupl, gocritic
 	userID, errParse := uuid.Parse(req.GetUserID())
-	var users []*pr.User
+	users := make([]*pr.User, 0)
 	if errParse != nil {
 		logrus.WithFields(logrus.Fields{
 			"user ID": userID,
@@ -46,13 +50,14 @@ func (s *UserCommServer) GetFriends(ctx context.Context, req *pr.GetFriendsReque
 		}).Errorf("error while getting users, %s", err)
 		return &pr.GetFriendsResponse{Friends: users}, fmt.Errorf("error while gettingg friends from db, %s", err)
 	}
-	for _, user := range *usersDB {
+	for _, user := range usersDB {
 		users = append(users, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetFriendsResponse{Friends: users}, nil
 }
 
-func (s *UserCommServer) SendFriendsRequest(ctx context.Context, req *pr.SendFriendRequestReq) (*pr.SendFriendRequestResp, error) {
+// SendFriendsRequest used to send request to a friend
+func (s *UserCommServer) SendFriendsRequest(ctx context.Context, req *pr.SendFriendRequestReq) (*pr.SendFriendRequestResp, error) { // nolint:dupl, gocritic
 	userSenderID, errParse := uuid.Parse(req.GetUserID())
 	if errParse != nil {
 		logrus.WithFields(logrus.Fields{
@@ -75,7 +80,8 @@ func (s *UserCommServer) SendFriendsRequest(ctx context.Context, req *pr.SendFri
 	return &pr.SendFriendRequestResp{}, nil
 }
 
-func (s *UserCommServer) AcceptFriendsRequest(ctx context.Context, req *pr.AcceptFriendsRequestReq) (*pr.AcceptFriendsRequestResp, error) {
+// AcceptFriendsRequest used to accept request to a friend
+func (s *UserCommServer) AcceptFriendsRequest(ctx context.Context, req *pr.AcceptFriendsRequestReq) (*pr.AcceptFriendsRequestResp, error) { // nolint:dupl, gocritic
 	userReceiverID, errParse := uuid.Parse(req.GetUserID())
 	if errParse != nil {
 		logrus.WithFields(logrus.Fields{
@@ -98,7 +104,8 @@ func (s *UserCommServer) AcceptFriendsRequest(ctx context.Context, req *pr.Accep
 	return &pr.AcceptFriendsRequestResp{}, nil
 }
 
-func (s *UserCommServer) DeclineFriendsRequest(ctx context.Context, req *pr.DeclineFriendsRequestReq) (*pr.DeclineFriendsRequestResp, error) {
+// DeclineFriendsRequest used to decline request to a friend
+func (s *UserCommServer) DeclineFriendsRequest(ctx context.Context, req *pr.DeclineFriendsRequestReq) (*pr.DeclineFriendsRequestResp, error) { // nolint:dupl, gocritic
 	userReceiverID, errParse := uuid.Parse(req.UserID)
 	if errParse != nil {
 		logrus.WithFields(logrus.Fields{
@@ -121,6 +128,7 @@ func (s *UserCommServer) DeclineFriendsRequest(ctx context.Context, req *pr.Decl
 	return &pr.DeclineFriendsRequestResp{}, nil
 }
 
+// FindUser used to find user
 func (s *UserCommServer) FindUser(ctx context.Context, req *pr.FindUserRequest) (*pr.FindUserResponse, error) {
 	user, err := s.userCommServ.FindUser(ctx, req.GetUserEmail())
 	if err != nil {
@@ -132,9 +140,10 @@ func (s *UserCommServer) FindUser(ctx context.Context, req *pr.FindUserRequest) 
 	return &pr.FindUserResponse{Friend: &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email}}, nil
 }
 
-func (s *UserCommServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) (*pr.GetRequestResp, error) {
+// GetRequest used to get requests to be a friend
+func (s *UserCommServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) (*pr.GetRequestResp, error) { // nolint:dupl, gocritic
 	userID, errParse := uuid.Parse(req.GetUserID())
-	var users []*pr.User
+	users := make([]*pr.User, 0)
 	if errParse != nil {
 		logrus.WithFields(logrus.Fields{
 			"user ID": userID,
@@ -148,15 +157,16 @@ func (s *UserCommServer) GetRequest(ctx context.Context, req *pr.GetRequestReq) 
 		}).Errorf("error while getting requests, %s", err)
 		return &pr.GetRequestResp{Users: users}, fmt.Errorf("error while getting requests to be a friend from db, %s", err)
 	}
-	for _, user := range *usersDB {
+	for _, user := range usersDB {
 		users = append(users, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetRequestResp{Users: users}, nil
 }
 
+// GetUsers used to get users by theirs ID
 func (s *UserCommServer) GetUsers(ctx context.Context, req *pr.GetUsersRequest) (*pr.GetUsersResponse, error) {
 	usersStrID := req.GetUsersID()
-	var usersID []uuid.UUID
+	usersID := make([]*uuid.UUID, 0)
 	for _, userStrID := range usersStrID {
 		userID, errParseID := uuid.Parse(userStrID)
 		if errParseID != nil {
@@ -165,17 +175,17 @@ func (s *UserCommServer) GetUsers(ctx context.Context, req *pr.GetUsersRequest) 
 			}).Errorf("error while parsing (get request), %s", errParseID)
 			return &pr.GetUsersResponse{}, fmt.Errorf("error while parsing userID, %s", errParseID)
 		}
-		usersID = append(usersID, userID)
+		usersID = append(usersID, &userID)
 	}
-	usersDB, err := s.userCommServ.GetUsers(ctx, &usersID)
+	usersDB, err := s.userCommServ.GetUsers(ctx, usersID)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"users from database": usersDB,
 		}).Errorf("error while getting requests, %s", err)
 		return &pr.GetUsersResponse{}, fmt.Errorf("error while getting users, %s", err)
 	}
-	var usersGRPC []*pr.User
-	for _, user := range *usersDB {
+	usersGRPC := make([]*pr.User, 0)
+	for _, user := range usersDB {
 		usersGRPC = append(usersGRPC, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetUsersResponse{Users: usersGRPC}, nil

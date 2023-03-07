@@ -11,13 +11,13 @@ import (
 
 // UserComm interface consists of methods to communicate with user repo
 type UserComm interface {
-	GetFriends(ctx context.Context, userID uuid.UUID) (*[]models.User, error)
+	GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	SendFriendsRequest(ctx context.Context, userSender uuid.UUID, userReceiver uuid.UUID) error
 	AcceptFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	DeclineFriendsRequest(ctx context.Context, userSenderID uuid.UUID, userID uuid.UUID) error
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
-	GetRequest(ctx context.Context, userID uuid.UUID) (*[]models.User, error)
-	GetUsers(ctx context.Context, usersID *[]uuid.UUID) (*[]models.User, error)
+	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
+	GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error)
 }
 
 // UserCommServer define service user communicate struct
@@ -31,7 +31,7 @@ func NewUserCommServer(userCommRepo UserComm) *UserCommServer {
 }
 
 // GetFriends used to get friends by repo
-func (s *UserCommServer) GetFriends(ctx context.Context, userID uuid.UUID) (*[]models.User, error) {
+func (s *UserCommServer) GetFriends(ctx context.Context, userID uuid.UUID) ([]*models.User, error) { // nolint:dupl, gocritic
 	return s.userCommRepo.GetFriends(ctx, userID)
 }
 
@@ -56,10 +56,11 @@ func (s *UserCommServer) FindUser(ctx context.Context, userEmail string) (*model
 }
 
 // GetRequest used to getting request to be a friend by repo
-func (s *UserCommServer) GetRequest(ctx context.Context, userID uuid.UUID) (*[]models.User, error) {
+func (s *UserCommServer) GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error) { // nolint:dupl, gocritic
 	return s.userCommRepo.GetRequest(ctx, userID)
 }
 
-func (s *UserCommServer) GetUsers(ctx context.Context, usersID *[]uuid.UUID) (*[]models.User, error) {
+// GetUsers used to getting users by theirs id by repo
+func (s *UserCommServer) GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error) {
 	return s.userCommRepo.GetUsers(ctx, usersID)
 }
