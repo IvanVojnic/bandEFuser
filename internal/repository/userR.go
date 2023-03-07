@@ -66,7 +66,7 @@ func (r *UserCommPostgres) SendFriendsRequest(ctx context.Context, userSender, u
 }
 
 // AcceptFriendsRequest used to accept request
-func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderID, userID uuid.UUID) error {
+func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderID, userID uuid.UUID) error { // nolint:dupl, gocritic
 	_, err := r.db.Exec(ctx,
 		`UPDATE friends 
 			SET status=$1 
@@ -79,7 +79,7 @@ func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderI
 }
 
 // DeclineFriendsRequest used to decline request
-func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSenderID, userID uuid.UUID) error {
+func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSenderID, userID uuid.UUID) error { // nolint:dupl, gocritic
 	_, err := r.db.Exec(ctx,
 		`UPDATE friends 
 			SET status=$1 

@@ -1,3 +1,4 @@
+// Package rpc define invite services methods
 package rpc
 
 import (
