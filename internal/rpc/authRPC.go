@@ -16,7 +16,7 @@ import (
 type Auth interface {
 	SignUp(ctx context.Context, user *models.User) error
 	UpdateRefreshToken(ctx context.Context, rt string, id uuid.UUID) error
-	SignIn(ctx context.Context, user *models.User) (models.Tokens, error)
+	SignIn(ctx context.Context, user *models.Login) (models.Tokens, error)
 }
 
 // UserAuthServer define user auth obj
@@ -46,7 +46,7 @@ func (s *UserAuthServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr
 // SignIn used to sign in
 func (s *UserAuthServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr.SignInResponse, error) {
 	password := req.GetPassword()
-	user := models.User{Name: req.GetName(), Password: password}
+	user := models.Login{Name: req.GetName(), Password: password}
 	tokens, err := s.authServ.SignIn(ctx, &user)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{

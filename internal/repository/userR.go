@@ -38,7 +38,9 @@ func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]
 	var users []*models.User
 	rowsFriends, err := r.db.Query(ctx,
 		`SELECT users.id, users.name FROM users
-    		INNER JOIN friends ON friends.userReceiver = users.id OR friends.userSender = users.id WHERE users.id=$1 AND friends.status=$2`, userID, Accept)
+    		 INNER JOIN friends ON friends.userReceiver = users.id OR friends.userSender = users.id 
+			 WHERE users.id=$1 AND friends.status=$2`,
+		userID, Accept)
 	if err != nil {
 		return users, fmt.Errorf("get all friends sql script error %w", err)
 	}
@@ -70,8 +72,7 @@ func (r *UserCommPostgres) AcceptFriendsRequest(ctx context.Context, userSenderI
 	_, err := r.db.Exec(ctx,
 		`UPDATE friends 
 			SET status=$1 
-			WHERE userSender=$2 AND userReceiver=$3`,
-		Accept, userSenderID, userID)
+			WHERE userSender=$2 AND userReceiver=$3`, Accept, userSenderID, userID)
 	if err != nil {
 		return fmt.Errorf("update friends error %w", err)
 	}
@@ -93,12 +94,12 @@ func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSender
 
 // FindUser used to find user by email
 func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*models.User, error) {
-	var user models.User
+	var user *models.User
 	err := r.db.QueryRow(ctx, `SELECT users.id, users.email FROM users WHERE users.email=$1`, userEmail).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
-		return &user, fmt.Errorf("error: cannot get id, %w", err)
+		return nil, fmt.Errorf("error: cannot get id, %w", err)
 	}
-	return &user, nil
+	return user, nil
 }
 
 // GetRequest used to get request to be a friends
@@ -106,7 +107,8 @@ func (r *UserCommPostgres) GetRequest(ctx context.Context, userID uuid.UUID) ([]
 	var users []*models.User
 	rowsFriendsReq, err := r.db.Query(ctx,
 		`SELECT users.id, users.name FROM users u
-    		INNER JOIN friends f ON f.userReceiver = u.id WHERE u.id=$1 AND f.status=$2`, userID, NoAnswer)
+    		 INNER JOIN friends f ON f.userReceiver = u.id 
+			 WHERE u.id=$1 AND f.status=$2`, userID, NoAnswer)
 	if err != nil {
 		return users, fmt.Errorf("get all friends requests sql script error %w", err)
 	}
