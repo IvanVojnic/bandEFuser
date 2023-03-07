@@ -1,2 +1,5 @@
 storage:
   pUrl: postgres://postgres:postgres@host.docker.internal:5432/postgres?sslmode=disable
+  SigningKey: barband
+  TokenRTDuration: 3600000000000000
+  TokenATDuration: 3600000000000

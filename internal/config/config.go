@@ -16,6 +16,13 @@ type Config struct {
 	DB          string `env:"DB" envDefault:"postgres"`
 }
 
+// AuthConfig struct used to declare auth var
+/*type AuthConfig struct {
+	SigningKey      string `env:"SigningKey" envDefault:"barband"`
+	TokenRTDuration int    `env:"TokenRTDuration" envDefault:"3600000000000000"`
+	TokenATDuration int    `env:"TokenATDuration" envDefault:"3600000000000"`
+}*/
+
 // NewConfig used to init config to db
 func NewConfig() (*Config, error) {
 	Cfg := &Config{}
