@@ -209,5 +209,5 @@ func (s *UserCommServer) GetUser(ctx context.Context, req *pr.GetUserRequest) (*
 		return &pr.GetUserResponse{}, fmt.Errorf("error while getting user, %s", err)
 	}
 
-	return &pr.GetUserResponse{User: &pr.User{ID: userDB.ID.String(), Name: userDB.Name, Email: userDB.Email})}, nil
+	return &pr.GetUserResponse{User: &pr.User{ID: userDB.ID.String(), Name: userDB.Name, Email: userDB.Email}}, nil
 }
