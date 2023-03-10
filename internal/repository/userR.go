@@ -4,16 +4,17 @@ package repository
 import (
 	"context"
 	"fmt"
-
 	"github.com/IvanVojnic/bandEFuser/models"
-
 	"github.com/google/uuid"
+
+	prFriends "github.com/IvanVojnic/bandEFnotif/proto"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // UserCommPostgres is a wrapper to db object
 type UserCommPostgres struct {
-	db *pgxpool.Pool
+	db     *pgxpool.Pool
+	client prFriends.FriendsClient
 }
 
 // Status used to define types of statuses
@@ -144,4 +145,12 @@ func (r *UserCommPostgres) GetUsers(ctx context.Context, usersID []*uuid.UUID) (
 		users = append(users, &user)
 	}
 	return users, nil
+}
+
+func (r *UserCommPostgres) StorageInvite(ctx context.Context, userSender, userReceiver models.User) error {
+	_, errGRPC := r.client.StorageFriendsRequest(ctx, &prFriends.StorageFriendsRequestReq{UserSender: userSender, UserReceiver: userReceiver})
+	if errGRPC != nil {
+		return fmt.Errorf("error while storage notiffications of invite, %s", errGRPC)
+	}
+	return nil
 }
