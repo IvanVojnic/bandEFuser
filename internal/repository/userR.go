@@ -60,7 +60,7 @@ func (r *UserCommPostgres) GetFriends(ctx context.Context, userID uuid.UUID) ([]
 // SendFriendsRequest used to send requests for user
 func (r *UserCommPostgres) SendFriendsRequest(ctx context.Context, userSender, userReceiver uuid.UUID) error {
 	friendsID := uuid.New()
-	_, err := r.db.Exec(ctx, `INSERT INTO friends (id, userSender, userReceiver, status_id) VALUES($1, $2, $3, $4)`,
+	_, err := r.db.Exec(ctx, `INSERT INTO friends (id, userSender, userReceiver, status) VALUES($1, $2, $3, $4)`,
 		friendsID, userSender, userReceiver, NoAnswer)
 	if err != nil {
 		return fmt.Errorf("error while friends relationship creating: %s", err)
