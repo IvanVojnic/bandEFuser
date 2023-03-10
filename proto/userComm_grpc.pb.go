@@ -29,6 +29,7 @@ type UserCommClient interface {
 	FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error)
 	GetRequest(ctx context.Context, in *GetRequestReq, opts ...grpc.CallOption) (*GetRequestResp, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 }
 
 type userCommClient struct {
@@ -102,6 +103,15 @@ func (c *userCommClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts
 	return out, nil
 }
 
+func (c *userCommClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
+	err := c.cc.Invoke(ctx, "/userComm.userComm/GetUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserCommServer is the server API for UserComm service.
 // All implementations must embed UnimplementedUserCommServer
 // for forward compatibility
@@ -113,6 +123,7 @@ type UserCommServer interface {
 	FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error)
 	GetRequest(context.Context, *GetRequestReq) (*GetRequestResp, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
+	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	mustEmbedUnimplementedUserCommServer()
 }
 
@@ -140,6 +151,9 @@ func (UnimplementedUserCommServer) GetRequest(context.Context, *GetRequestReq) (
 }
 func (UnimplementedUserCommServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (UnimplementedUserCommServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedUserCommServer) mustEmbedUnimplementedUserCommServer() {}
 
@@ -280,6 +294,24 @@ func _UserComm_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserComm_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserCommServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userComm.userComm/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserCommServer).GetUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserComm_ServiceDesc is the grpc.ServiceDesc for UserComm service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -314,6 +346,10 @@ var UserComm_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsers",
 			Handler:    _UserComm_GetUsers_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _UserComm_GetUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

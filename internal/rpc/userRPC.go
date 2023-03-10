@@ -20,6 +20,7 @@ type UserComm interface {
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
 	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (models.User, error)
 }
 
 // UserCommServer define user comm obj
@@ -189,4 +190,24 @@ func (s *UserCommServer) GetUsers(ctx context.Context, req *pr.GetUsersRequest) 
 		usersGRPC = append(usersGRPC, &pr.User{ID: user.ID.String(), Name: user.Name, Email: user.Email})
 	}
 	return &pr.GetUsersResponse{Users: usersGRPC}, nil
+}
+
+// GetUser used to get users by theirs ID
+func (s *UserCommServer) GetUser(ctx context.Context, req *pr.GetUserRequest) (*pr.GetUserResponse, error) {
+	userID, errParseID := uuid.Parse(req.GetUserID())
+	if errParseID != nil {
+		logrus.WithFields(logrus.Fields{
+			"user ID": userID,
+		}).Errorf("error while parsing, %s", errParseID)
+		return &pr.GetUserResponse{}, fmt.Errorf("error while parsing userID, %s", errParseID)
+	}
+	userDB, err := s.userCommServ.GetUser(ctx, userID)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"user from database": userDB,
+		}).Errorf("error while getting requests, %s", err)
+		return &pr.GetUserResponse{}, fmt.Errorf("error while getting user, %s", err)
+	}
+
+	return &pr.GetUserResponse{User: &pr.User{ID: userDB.ID.String(), Name: userDB.Name, Email: userDB.Email})}, nil
 }
