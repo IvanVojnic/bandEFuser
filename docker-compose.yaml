@@ -31,19 +31,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: vojnic/user:userMs
+    image: vojnic/room:roomMs
     depends_on:
       - postgres
       - flyway
     environment:
       - pUrl=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
-    networks:
-      - default
-  appcmd:
-    image: vojnic/bandef:cmdMS
-    ports:
-      - "3000:40000"
-    environment:
-      - PORT=app:8000
     networks:
       - default
