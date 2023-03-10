@@ -3,7 +3,7 @@ module github.com/IvanVojnic/bandEFuser
 go 1.19
 
 require (
-	github.com/IvanVojnic/bandEFnotif v1.0.2
+	github.com/IvanVojnic/bandEFnotif v1.0.3
 	github.com/caarlos0/env/v7 v7.0.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0

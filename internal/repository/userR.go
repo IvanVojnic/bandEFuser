@@ -96,7 +96,17 @@ func (r *UserCommPostgres) DeclineFriendsRequest(ctx context.Context, userSender
 // FindUser used to find user by email
 func (r *UserCommPostgres) FindUser(ctx context.Context, userEmail string) (*models.User, error) {
 	var user *models.User
-	err := r.db.QueryRow(ctx, `SELECT users.id, users.email FROM users WHERE users.email=$1`, userEmail).Scan(&user.ID, &user.Name, &user.Email)
+	err := r.db.QueryRow(ctx, `SELECT users.id, users.name, users.email FROM users WHERE users.email=$1`, userEmail).Scan(&user.ID, &user.Name, &user.Email)
+	if err != nil {
+		return nil, fmt.Errorf("error: cannot get id, %w", err)
+	}
+	return user, nil
+}
+
+// GetUserByID used to find user by ID
+func (r *UserCommPostgres) GetUserByID(ctx context.Context, userID uuid.UUID) (*models.User, error) {
+	var user *models.User
+	err := r.db.QueryRow(ctx, `SELECT users.id, users.name, users.email FROM users WHERE users.id=$1`, userID).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
 		return nil, fmt.Errorf("error: cannot get id, %w", err)
 	}
@@ -148,7 +158,9 @@ func (r *UserCommPostgres) GetUsers(ctx context.Context, usersID []*uuid.UUID) (
 }
 
 func (r *UserCommPostgres) StorageInvite(ctx context.Context, userSender, userReceiver models.User) error {
-	_, errGRPC := r.client.StorageFriendsRequest(ctx, &prFriends.StorageFriendsRequestReq{UserSender: userSender, UserReceiver: userReceiver})
+	userSenderGRPC := &prFriends.User{UserID: userSender.ID.String(), UserEmail: userSender.Email, UserName: userSender.Name}
+	userReceiverGRPC := &prFriends.User{UserID: userReceiver.ID.String(), UserEmail: userReceiver.Email, UserName: userReceiver.Name}
+	_, errGRPC := r.client.StorageFriendsRequest(ctx, &prFriends.StorageFriendsRequestReq{UserSender: userSenderGRPC, UserReceiver: userReceiverGRPC})
 	if errGRPC != nil {
 		return fmt.Errorf("error while storage notiffications of invite, %s", errGRPC)
 	}

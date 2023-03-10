@@ -1,5 +1,5 @@
-github.com/IvanVojnic/bandEFnotif v1.0.2 h1:cTQvGxThzrNoGPmbWeWwf/lAknrbCuHX3uE4VTFbuhQ=
-github.com/IvanVojnic/bandEFnotif v1.0.2/go.mod h1:/QaCP48XE+u/ATU8XKpoV0P7VPq0NImVjtyJE6ZWDZA=
+github.com/IvanVojnic/bandEFnotif v1.0.3 h1:SL8IA2BO4X5G9QU+V3WM+qAZGAcAe6pKqb28OCOdtng=
+github.com/IvanVojnic/bandEFnotif v1.0.3/go.mod h1:/QaCP48XE+u/ATU8XKpoV0P7VPq0NImVjtyJE6ZWDZA=
 github.com/caarlos0/env/v7 v7.0.0 h1:cyczlTd/zREwSr9ch/mwaDl7Hse7kJuUY8hvHfXu5WI=
 github.com/caarlos0/env/v7 v7.0.0/go.mod h1:LPPWniDUq4JaO6Q41vtlyikhMknqymCLBw0eX4dcH1E=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=

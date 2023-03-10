@@ -3,6 +3,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/IvanVojnic/bandEFuser/models"
 
@@ -18,6 +19,8 @@ type UserComm interface {
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
 	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error)
+	StorageInvite(ctx context.Context, userSender, userReceiver models.User) error
+	GetUserByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
 }
 
 // UserCommServer define service user communicate struct
@@ -37,7 +40,19 @@ func (s *UserCommServer) GetFriends(ctx context.Context, userID uuid.UUID) ([]*m
 
 // SendFriendsRequest used to send request by repo
 func (s *UserCommServer) SendFriendsRequest(ctx context.Context, userSenderID, userReceiverID uuid.UUID) error {
-	return s.userCommRepo.SendFriendsRequest(ctx, userSenderID, userReceiverID)
+	err := s.userCommRepo.SendFriendsRequest(ctx, userSenderID, userReceiverID)
+	if err != nil {
+		return fmt.Errorf("error while sending invite, %s", err)
+	}
+	userSender, err := s.userCommRepo.GetUserByID(ctx, userSenderID)
+	if err != nil {
+		return fmt.Errorf("error while getting user sender, %s", err)
+	}
+	userReceiver, err := s.userCommRepo.GetUserByID(ctx, userSenderID)
+	if err != nil {
+		return fmt.Errorf("error while getting user receiver, %s", err)
+	}
+	return s.userCommRepo.StorageInvite(ctx, *userSender, *userReceiver)
 }
 
 // AcceptFriendsRequest used to accept request by repo
