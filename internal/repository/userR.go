@@ -157,7 +157,7 @@ func (r *UserCommPostgres) GetUsers(ctx context.Context, usersID []*uuid.UUID) (
 	return users, nil
 }
 
-func (r *UserCommPostgres) StorageInvite(ctx context.Context, userSender, userReceiver models.User) error {
+func (r *UserCommPostgres) StorageFriendsRequest(ctx context.Context, userSender, userReceiver models.User) error {
 	userSenderGRPC := &prFriends.User{UserID: userSender.ID.String(), UserEmail: userSender.Email, UserName: userSender.Name}
 	userReceiverGRPC := &prFriends.User{UserID: userReceiver.ID.String(), UserEmail: userReceiver.Email, UserName: userReceiver.Name}
 	_, errGRPC := r.client.StorageFriendsRequest(ctx, &prFriends.StorageFriendsRequestReq{UserSender: userSenderGRPC, UserReceiver: userReceiverGRPC})

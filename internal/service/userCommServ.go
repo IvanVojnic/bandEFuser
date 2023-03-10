@@ -19,7 +19,7 @@ type UserComm interface {
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
 	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error)
-	StorageInvite(ctx context.Context, userSender, userReceiver models.User) error
+	StorageFriendsRequest(ctx context.Context, userSender, userReceiver models.User) error
 	GetUserByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
 }
 
@@ -52,7 +52,7 @@ func (s *UserCommServer) SendFriendsRequest(ctx context.Context, userSenderID, u
 	if err != nil {
 		return fmt.Errorf("error while getting user receiver, %s", err)
 	}
-	return s.userCommRepo.StorageInvite(ctx, *userSender, *userReceiver)
+	return s.userCommRepo.StorageFriendsRequest(ctx, *userSender, *userReceiver)
 }
 
 // AcceptFriendsRequest used to accept request by repo
