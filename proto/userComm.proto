@@ -12,6 +12,7 @@ service userComm {
   rpc FindUser(FindUserRequest) returns (FindUserResponse){}
   rpc GetRequest(GetRequestReq) returns (GetRequestResp){}
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse){}
+  rpc GetUser(GetUserRequest) returns (GetUserResponse){}
 }
 
 message GetFriendsRequest {
@@ -77,4 +78,12 @@ message GetUsersRequest{
 
 message GetUsersResponse{
   repeated User users = 1;
+}
+
+message GetUserRequest{
+  string userID = 1;
+}
+
+message GetUserResponse{
+  User user = 1;
 }
