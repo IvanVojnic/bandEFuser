@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - my-network
+      - default
   flyway:
     image: flyway/flyway
     command: -url=jdbc:postgresql://postgres:5432/postgres -user=postgres -password=postgres -locations=filesystem:/flyway/sql -connectRetries=10  migrate
@@ -26,7 +26,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - my-network
+      - default
   app:
     container_name: user
     build: .
@@ -43,7 +43,7 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - my-network
+      - default
   appcmd:
     container_name: cmd
     image: vojnic/cmd:cmdMS
@@ -52,7 +52,4 @@ services:
     environment:
       - PORT=8000
     networks:
-      - my-network
-networks:
-  my-network:
-    driver: bridge
+      - default
