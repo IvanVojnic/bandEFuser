@@ -79,3 +79,7 @@ func (s *UserCommServer) GetRequest(ctx context.Context, userID uuid.UUID) ([]*m
 func (s *UserCommServer) GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error) {
 	return s.userCommRepo.GetUsers(ctx, usersID)
 }
+
+func (s *UserCommServer) GetUser(ctx context.Context, userID uuid.UUID) (*models.User, error) {
+	return s.userCommRepo.GetUserByID(ctx, userID)
+}

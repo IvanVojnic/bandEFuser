@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/IvanVojnic/bandEFuser/internal/config"
@@ -44,12 +45,14 @@ func main() {
 
 	pr.RegisterUserAuthServer(s, userAuthGRPC)
 	pr.RegisterUserCommServer(s, userCommGRPC)
-	listen, err := net.Listen("tcp", "1.1.1.1:8000")
+	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", cfg.Host, cfg.Port))
 	if err != nil {
-		defer logrus.Fatalf("error while listening port: %e", err)
+		logrus.Fatalf("error while listening port: %v", err)
 	}
 
+	logrus.Info("a")
+
 	if errServ := s.Serve(listen); errServ != nil {
-		defer logrus.Fatalf("error while listening server: %e", err)
+		logrus.Fatalf("error while listening server: %v", err)
 	}
 }

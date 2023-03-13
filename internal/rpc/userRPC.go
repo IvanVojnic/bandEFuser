@@ -20,7 +20,7 @@ type UserComm interface {
 	FindUser(ctx context.Context, userEmail string) (*models.User, error)
 	GetRequest(ctx context.Context, userID uuid.UUID) ([]*models.User, error)
 	GetUsers(ctx context.Context, usersID []*uuid.UUID) ([]*models.User, error)
-	GetUser(ctx context.Context, userID uuid.UUID) (models.User, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (*models.User, error)
 }
 
 // UserCommServer define user comm obj

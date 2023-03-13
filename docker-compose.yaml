@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - default
+      - my-network
   flyway:
     image: flyway/flyway
     command: -url=jdbc:postgresql://postgres:5432/postgres -user=postgres -password=postgres -locations=filesystem:/flyway/sql -connectRetries=10  migrate
@@ -26,16 +26,33 @@ services:
     depends_on:
       - postgres
     networks:
-      - default
+      - my-network
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: vojnic/room:roomMs
+    container_name: user
+    build: .
+    image: vojnic/user:userMS
     depends_on:
-      - postgres
-      - flyway
+      postgres:
+          condition: service_healthy
     environment:
-      - pUrl=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "8000:8000"
     networks:
-      - default
+      - my-network
+  appcmd:
+    container_name: cmd
+    image: vojnic/cmd:cmdMS
+    ports:
+      - "40000:40000"
+    environment:
+      - PORT=8000
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge

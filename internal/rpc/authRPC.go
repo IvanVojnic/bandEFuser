@@ -32,6 +32,7 @@ func NewUserAuthServer(authServ Auth) *UserAuthServer {
 
 // SignUp used to sign up
 func (s *UserAuthServer) SignUp(ctx context.Context, req *pr.SignUpRequest) (*pr.SignUpResponse, error) {
+	logrus.Info("a")
 	user := models.User{ID: uuid.New(), Email: req.GetEmail(), Name: req.GetName(), Password: req.GetPassword()}
 	err := s.authServ.SignUp(ctx, &user)
 	if err != nil {

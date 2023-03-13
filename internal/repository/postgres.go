@@ -11,7 +11,9 @@ import (
 
 // NewPostgresDB func to init and connect to db
 func NewPostgresDB(cfg *config.Config) (pool *pgxpool.Pool, err error) {
-	pool, err = pgxpool.New(context.Background(), cfg.PostgresURL)
+	pgURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cfg.PostgresUser, cfg.PostgresPassword,
+		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresDB)
+	pool, err = pgxpool.New(context.Background(), pgURL)
 	if err != nil {
 		return nil, fmt.Errorf("invalid configuration data: %v", err)
 	}

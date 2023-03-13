@@ -42,12 +42,12 @@ func (r *UserPostgres) UpdateRefreshToken(ctx context.Context, rt string, id uui
 
 // SignIn used to sign in user
 func (r *UserPostgres) SignIn(ctx context.Context, login models.Login) (*models.User, error) {
-	var user *models.User
+	var user models.User
 	err := r.db.QueryRow(ctx,
 		`SELECT users.id, users.name, users.password FROM users WHERE users.name=$1`,
 		login.Name).Scan(&user.ID, &user.Name, &user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("error while getting user %w", err)
 	}
-	return user, nil
+	return &user, nil
 }
