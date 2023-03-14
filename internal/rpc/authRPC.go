@@ -55,5 +55,5 @@ func (s *UserAuthServer) SignIn(ctx context.Context, req *pr.SignInRequest) (*pr
 		}).Errorf("error while logging, %s", err)
 		return &pr.SignInResponse{At: "", Rt: ""}, fmt.Errorf("error while login user, %s", err)
 	}
-	return &pr.SignInResponse{At: tokens.AccessToken, Rt: tokens.RefreshToken}, fmt.Errorf("error while loogin, wrong credentials %s", err)
+	return &pr.SignInResponse{At: tokens.AccessToken, Rt: tokens.RefreshToken}, nil
 }

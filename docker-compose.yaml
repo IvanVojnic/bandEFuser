@@ -42,8 +42,11 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "8000:8000"
+    external_links:
+      - approom:approom
     networks:
       - default
+      - approom_default
   appcmd:
     container_name: cmd
     image: vojnic/cmd:cmdMS
@@ -51,5 +54,13 @@ services:
       - "40000:40000"
     environment:
       - PORT=8000
+    external_links:
+      - approom:approom
     networks:
       - default
+      - approom_default
+networks:
+  default:
+    driver: bridge
+  approom_default:
+    external: true
